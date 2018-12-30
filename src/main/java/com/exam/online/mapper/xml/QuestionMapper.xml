@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.online.mapper.QuestionMapper">
+
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.exam.online.entity.Question">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="type" property="type" />
+        <result column="option_A" property="optionA" />
+        <result column="option_B" property="optionB" />
+        <result column="option_C" property="optionC" />
+        <result column="option_D" property="optionD" />
+        <result column="state" property="state" />
+        <result column="create_time" property="createTime" />
+        <result column="diff" property="diff" />
+        <result column="answer" property="answer" />
+        <result column="mark" property="mark" />
+        <result column="update_time" property="updateTime" />
+        <result column="option_id" property="optionId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, title, type, option_A, option_B, option_C, option_D, state, create_time, diff, answer, mark, update_time, option_id
+    </sql>
+
+</mapper>
