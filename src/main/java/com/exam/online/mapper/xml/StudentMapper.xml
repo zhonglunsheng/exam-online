@@ -7,7 +7,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.exam.online.entity.Student">
-        <id column="id" property="id" />
+        <id column="student_id" property="studentId" />
         <result column="num" property="num" />
         <result column="name" property="name" />
         <result column="sex" property="sex" />
@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, num, name, sex, department_id, major_id, grade_id, class_id, create_time, update_time
+        student_id, num, name, sex, department_id, major_id, grade_id, class_id, create_time, update_time
     </sql>
 
 </mapper>

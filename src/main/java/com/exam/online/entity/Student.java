@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2018-12-30
+ * @since 2019-01-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,8 +27,8 @@ public class Student extends Model<Student> {
     /**
      * 学生唯一标识
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableId(value = "student_id", type = IdType.AUTO)
+    private Integer studentId;
 
     /**
      * 学号
@@ -78,7 +78,7 @@ public class Student extends Model<Student> {
 
     @Override
     protected Serializable pkVal() {
-        return this.id;
+        return this.studentId;
     }
 
 }

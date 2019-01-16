@@ -1,9 +1,9 @@
 package com.exam.online.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.stereotype.Controller;
+import com.exam.online.entity.User;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -11,11 +11,23 @@ import org.springframework.stereotype.Controller;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2018-12-30
+ * @since 2019-01-16
  */
-@Controller
+@Slf4j
+@RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @RequestMapping("/index")
+    public String index(){
+        return "hello world~";
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(String email){
+        log.info(email);
+        return "hello world~";
+    }
 
 }
 
