@@ -14,18 +14,16 @@
         <result column="option_B" property="optionB" />
         <result column="option_C" property="optionC" />
         <result column="option_D" property="optionD" />
-        <result column="state" property="state" />
-        <result column="create_time" property="createTime" />
-        <result column="diff" property="diff" />
+        <result column="option_F" property="optionF" />
         <result column="answer" property="answer" />
-        <result column="mark" property="mark" />
+        <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
-        <result column="option_id" property="optionId" />
+        <result column="option_E" property="optionE" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, title, type, option_A, option_B, option_C, option_D, state, create_time, diff, answer, mark, update_time, option_id
+        id, title, type, option_A, option_B, option_C, option_D, option_F, answer, create_time, update_time, option_E
     </sql>
 
 </mapper>

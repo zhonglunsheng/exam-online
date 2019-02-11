@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 试卷问题关联表 服务类
+ * 该试卷下题库 服务类
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 public interface PaperQuestionService extends IService<PaperQuestion> {
 

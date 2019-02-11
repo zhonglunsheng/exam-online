@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -44,21 +44,6 @@ public class Student extends Model<Student> {
      * 性别
      */
     private String sex;
-
-    /**
-     * 学院
-     */
-    private Integer departmentId;
-
-    /**
-     * 专业
-     */
-    private Integer majorId;
-
-    /**
-     * 年级
-     */
-    private Integer gradeId;
 
     /**
      * 班级

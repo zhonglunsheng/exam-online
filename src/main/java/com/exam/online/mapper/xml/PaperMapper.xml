@@ -17,11 +17,13 @@
         <result column="random" property="random" />
         <result column="type" property="type" />
         <result column="end_time" property="endTime" />
+        <result column="score" property="score" />
+        <result column="type_nums" property="typeNums" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, start_time, remark, create_time, update_time, state, random, type, end_time
+        id, name, start_time, remark, create_time, update_time, state, random, type, end_time, score, type_nums
     </sql>
 
 </mapper>

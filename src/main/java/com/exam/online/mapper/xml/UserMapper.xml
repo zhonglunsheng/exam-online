@@ -12,14 +12,13 @@
         <result column="password" property="password" />
         <result column="name" property="name" />
         <result column="sex" property="sex" />
-        <result column="department_id" property="departmentId" />
         <result column="role" property="role" />
         <result column="phone" property="phone" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        user_id, email, password, name, sex, department_id, role, phone
+        user_id, email, password, name, sex, role, phone
     </sql>
 
 </mapper>

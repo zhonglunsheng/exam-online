@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -50,11 +50,6 @@ public class User extends Model<User> {
     private String sex;
 
     /**
-     * 所在院系
-     */
-    private Integer departmentId;
-
-    /**
      * 权限 0：管理员 1：教师
      */
     private Integer role;
@@ -64,6 +59,10 @@ public class User extends Model<User> {
      */
     private String phone;
 
+    /**
+     * 头像
+     */
+    private String avatar;
 
     @Override
     protected Serializable pkVal() {

@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 试卷问题关联表 Mapper 接口
+ * 该试卷下题库 Mapper 接口
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 public interface PaperQuestionMapper extends BaseMapper<PaperQuestion> {
 

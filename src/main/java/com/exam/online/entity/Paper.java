@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -66,7 +66,7 @@ public class Paper extends Model<Paper> {
     private Boolean random;
 
     /**
-     * 试卷包括的题型号 采用默认排列顺序
+     * 试卷包括的题型 采用默认排列顺序 单项、判断、填空、简答、应用
      */
     private String type;
 
@@ -74,6 +74,16 @@ public class Paper extends Model<Paper> {
      * 考试结束时间
      */
     private LocalDateTime endTime;
+
+    /**
+     * 对应type题型 每个题型下单个问题占分 采用默认排序方式
+     */
+    private String score;
+
+    /**
+     * 试卷包括的题型数量 采用默认排列顺序 单项、判断、填空、简答、应用
+     */
+    private String typeNums;
 
 
     @Override

@@ -1,5 +1,6 @@
 package com.exam.online.service;
 
+import com.exam.online.common.Result;
 import com.exam.online.entity.Paper;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -9,8 +10,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 public interface PaperService extends IService<Paper> {
 
+    Result paperRandom(Integer paperId);
 }

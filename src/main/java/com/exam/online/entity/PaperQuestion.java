@@ -10,11 +10,11 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 试卷问题关联表
+ * 该试卷下题库
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -23,6 +23,9 @@ public class PaperQuestion extends Model<PaperQuestion> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 唯一标识
+     */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
@@ -32,7 +35,7 @@ public class PaperQuestion extends Model<PaperQuestion> {
     private Integer paperId;
 
     /**
-     * 问题id
+     * 题目id
      */
     private Integer questionId;
 

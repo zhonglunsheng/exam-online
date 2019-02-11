@@ -7,11 +7,11 @@ import org.springframework.stereotype.Controller;
 
 /**
  * <p>
- * 试卷问题关联表 前端控制器
+ * 该试卷下题库 前端控制器
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Controller
 @RequestMapping("/paperQuestion")

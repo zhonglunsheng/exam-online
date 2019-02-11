@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zhonglunsheng
- * @since 2019-01-16
+ * @since 2019-02-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -66,9 +66,15 @@ public class Question extends Model<Question> {
     private String optionD;
 
     /**
-     * 状态 0：生效 1：失效
+     * 选项F内容
      */
-    private Integer state;
+    @TableField("option_F")
+    private String optionF;
+
+    /**
+     * 参考答案
+     */
+    private String answer;
 
     /**
      * 创建时间
@@ -76,29 +82,15 @@ public class Question extends Model<Question> {
     private LocalDateTime createTime;
 
     /**
-     * 难度
-     */
-    private Integer diff;
-
-    /**
-     * 正确答案
-     */
-    private String answer;
-
-    /**
-     * 分数
-     */
-    private Integer mark;
-
-    /**
      * 更新时间
      */
     private LocalDateTime updateTime;
 
     /**
-     * 添加额外选项
+     * 选项E内容
      */
-    private Integer optionId;
+    @TableField("option_E")
+    private String optionE;
 
 
     @Override
