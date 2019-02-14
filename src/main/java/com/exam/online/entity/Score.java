@@ -48,12 +48,12 @@ public class Score extends Model<Score> {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private String createTime;
 
     /**
      * 修改时间
      */
-    private LocalDateTime updateTime;
+    private String updateTime;
 
 
     @Override

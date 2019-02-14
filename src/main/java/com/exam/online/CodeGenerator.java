@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 public class CodeGenerator {
 
     public static void main(String[] args) {
-        AutoGenerator mpg = new AutoGenerator();
+       /* AutoGenerator mpg = new AutoGenerator();
 
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
@@ -42,14 +42,14 @@ public class CodeGenerator {
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
-        /*dsc.setTypeConvert(new MySqlTypeConvert(){
+        *//*dsc.setTypeConvert(new MySqlTypeConvert(){
             // 自定义数据库表字段类型转换【可选】
             @Override
             public DbColumnType processTypeConvert(String fieldType) {
                 System.out.println("转换类型：" + fieldType);
                 return super.processTypeConvert(fieldType);
             }
-        });*/
+        });*//*
 
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUrl("jdbc:mysql://localhost:3306/exam?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT");
@@ -74,7 +74,7 @@ public class CodeGenerator {
         mpg.setPackageInfo(pc);
 
         // 执行生成
-        mpg.execute();
+        mpg.execute();*/
     }
 
 }

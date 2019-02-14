@@ -48,12 +48,12 @@ public class Paper extends Model<Paper> {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private String createTime;
 
     /**
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     /**
      * 状态： 0：发布 1：结束

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-class-add">
+        <input name="classId"  type="hidden" id="classId"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">班级名称：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" id="className" name="className"/>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script>
+    $("#form-class-add").validate({
+        rules:{
+            className:{
+                required:true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            add();
+        }
+    }
+
+    function add() {
+        var className = $("input[name='className']").val();
+        $.ajax({
+            cache : true,
+            type : "POST",
+            url : "/admin/class/classAdd",
+            data : {
+                "className": className
+            },
+            async : false,
+            error : function(request) {
+                $.modal.alertError("系统错误");
+            },
+            success : function(data) {
+                $.operate.successCallback(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>

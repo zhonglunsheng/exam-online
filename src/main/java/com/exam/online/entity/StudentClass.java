@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -34,6 +37,15 @@ public class StudentClass extends Model<StudentClass> {
      */
     private String className;
 
+    /**
+     * 创建时间
+     */
+    private String createTime;
+
+    /**
+     * 更新时间
+     */
+    private String updateTime;
 
     @Override
     protected Serializable pkVal() {

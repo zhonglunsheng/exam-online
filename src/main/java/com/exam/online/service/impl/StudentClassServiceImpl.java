@@ -1,10 +1,14 @@
 package com.exam.online.service.impl;
 
+import com.exam.online.entity.Page;
 import com.exam.online.entity.StudentClass;
 import com.exam.online.mapper.StudentClassMapper;
 import com.exam.online.service.StudentClassService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +20,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StudentClassServiceImpl extends ServiceImpl<StudentClassMapper, StudentClass> implements StudentClassService {
-
 }

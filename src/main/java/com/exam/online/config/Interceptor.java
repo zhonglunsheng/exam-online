@@ -1,5 +1,6 @@
 package com.exam.online.config;
 
+import com.exam.online.access.UserContext;
 import com.exam.online.common.Result;
 import com.exam.online.entity.User;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,11 @@ public class Interceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user != null){
+            UserContext.setUser(user);
+        }
 //        Map<String, String[]> map = request.getParameterMap();
 //        for (Map.Entry entry:
 //             map.entrySet()) {
