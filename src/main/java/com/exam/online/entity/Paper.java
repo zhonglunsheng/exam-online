@@ -38,7 +38,7 @@ public class Paper extends Model<Paper> {
     /**
      * 考试开始时间
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * 备注
@@ -73,7 +73,7 @@ public class Paper extends Model<Paper> {
     /**
      * 考试结束时间
      */
-    private LocalDateTime endTime;
+    private String endTime;
 
     /**
      * 对应type题型 每个题型下单个问题占分 采用默认排序方式

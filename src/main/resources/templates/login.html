@@ -1,90 +1,97 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
-
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-
-    <title>H+ 后台主题UI框架 - 登录</title>
-    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
-    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
-
-    <link rel="shortcut icon" th:href="@{/favicon.ico}">
-    <link th:href="@{/css/bootstrap.min.css?v=3.3.6}" rel="stylesheet">
-    <link th:href="@{/css/font-awesome.min.css?v=4.4.0}" rel="stylesheet">
-
-    <link th:href="@{/css/animate.min.css}" rel="stylesheet">
-    <link th:href="@{/css/style.min.css?v=4.1.0}" rel="stylesheet">
+    <title>E+在线考试系统</title>
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link href="../static/css/login.min.css" th:href="@{/css/login.min.css}" rel="stylesheet"/>
+    <link href="../static/ajax/libs/iCheck/custom.css" th:href="@{/ajax/libs/iCheck/custom.css}" rel="stylesheet"/>
+    <link href="../static/ruoyi/css/ry-ui.css" th:href="@{/ruoyi/css/ry-ui.css?v=3.1.0}" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <link rel="shortcut icon" href="../static/favicon.ico" th:href="@{favicon.ico}"/>
+    <style type="text/css">label.error {
+        position: inherit;
+    }</style>
     <script th:src="@{/js/jquery.min.js?v=2.1.4}"></script>
     <script th:src="@{/js/bootstrap.min.js?v=3.3.6}"></script>
     <!-- layer -->
     <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
     <!-- common.js -->
     <script type="text/javascript" th:src="@{/js/common.js}"></script>
-    <!--[if lt IE 9]>
-    <meta http-equiv="refresh" content="0;ie.html" />
-    <![endif]-->
-    <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
 </head>
 
-<body class="gray-bg">
+<body class="signin">
 
-    <div class="middle-box text-center loginscreen  animated fadeInDown">
-        <div>
-            <div>
-
-                <h1 class="logo-name">E+</h1>
-
+<div class="signinpanel">
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="signin-info">
+                <div class="logopanel m-b">
+                    <h1>[ E+ ]</h1>
+                </div>
+                <div class="m-b"></div>
+                <h4>欢迎使用 <strong>E+ 在线考试系统</strong></h4>
+                <ul class="m-b">
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> SpringBoot</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Mybatis</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Shiro</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Thymeleaf</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Bootstrap</li>
+                </ul>
             </div>
-            <h3>欢迎使用 E+在线考试系统</h3>
-
-            <form class="m-t">
-                <div class="form-group">
-                    <input type="email" id="email" class="form-control" placeholder="邮箱" required="" value="admin@qq.com">
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" class="form-control" placeholder="密码" required="" minlength="6" maxlength="16" value="123456">
-                </div>
-                <!--<div class="form-group">-->
-                    <!--<label class="radio-inline">-->
-                        <!--<input type="radio" value="admin" id="admin" name="role" required="">管理员-->
-                    <!--</label>-->
-                    <!--<label class="radio-inline">-->
-                        <!--<input type="radio" value="teacher" id="teacher" name="role" required="">教师-->
-                    <!--</label>-->
-                <!--</div>-->
-                <button type="submit" class="btn btn-primary block full-width m-b" onclick="doLogin()">登 录</button>
+        </div>
+        <div class="col-sm-5">
+            <form id="signupForm">
+                <h4 class="no-margins">登录：</h4>
+                <input type="email" id="email" placeholder="用户邮箱" required="" value="admin@qq.com"
+                       class="form-control uname"/>
+                <input type="password" id="password" placeholder="密码" required="" minlength="6" maxlength="16"
+                       value="123456" class="form-control pword m-b"/>
+                <button type="submit" onclick="doLogin()" class="btn btn-success btn-block"
+                        data-loading="正在验证登录，请稍后...">登录
+                </button>
             </form>
         </div>
     </div>
-</body>
+    <div class="signup-footer">
+        <div class="pull-left">
+            &copy; 2018 All Rights Reserved. E+ <br>
+            <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">粤ICP备18046899号</a><br>
+        </div>
+    </div>
+</div>
 <script>
-    function doLogin(){
+    function doLogin() {
         var email = $("#email").val();
         var password = $("#password").val();
 
         $.ajax({
-            url: "/user/login",
+            url: "/system/login",
             type: "POST",
-            data:{
+            data: {
                 email: email,
                 password: password
             },
-            success:function(data){
-                layer.closeAll();
-                if(data.code == 0){
-                    layer.msg("成功");
-                    window.location.href="/user/main";
-                }else{
-                    layer.msg(data.msg);
+            success: function (data) {
+                if (data.code == 0) {
+                    var index = layer.load(2, {time: 3 * 1000}); //又换了种风格，并且设定最长等待3秒
+                    layer.close(index);
+                    window.location.href = "/user/main";
+                } else {
+                    layer.msg(data.msg)
                 }
             },
-            error:function(){
+            error: function () {
                 layer.closeAll();
             }
         });
     }
 </script>
+</body>
 </html>

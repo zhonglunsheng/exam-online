@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>远程教育考试平台_在线考试</title>
+	<link href="/student/css/main.css" rel="stylesheet" type="text/css" />
+	<link href="/student/css/iconfont.css" rel="stylesheet" type="text/css" />
+	<link href="/student/css/test.css" rel="stylesheet" type="text/css" />
+
+	<style>
+		.hasBeenAnswer {
+			background: #5d9cec;
+			color:#fff;
+		}
+
+	</style>
+</head>
+
+<body>
+<div class="main">
+	<!--nr start-->
+	<div class="test_main">
+		<div class="nr_left">
+			<div class="test" th:if="${result.code eq 0}">
+				<form action="/student/paper/submit" method="post" id="form-submit">
+					<input type="hidden" th:value="${result.studentId}" name="studentId">
+					<input type="hidden" th:value="${result.paperId}" name="paperId">
+					<div class="test_title">
+						<p class="test_time">
+							<b class="alt-1">01:40</b>
+						</p>
+						<font><input type="button" name="test_jiaojuan" value="交卷" onclick="paperSubmit()"></font>
+					</div>
+					<div style="text-align:center;">
+						<h3>[[${result.paperName}]]</h3>
+					</div>
+					<div th:each="s : ${result.questionResults}" >
+						<div class="test_content">
+							<div class="test_content_title">
+								<h2>[[${s.name}]]</h2>
+								<p>
+									<span>共</span><i class="content_lit">[[${s.total}]]</i><span>题，</span><span>合计</span><i class="content_fs">[[${s.score}]]</i><span>分</span>
+								</p>
+							</div>
+						</div>
+						<div class="test_content_nr" th:each="r : ${s.questionVos}">
+							<ul>
+								<li th:id="'qu_'+${sStat.index}+'_'+${rStat.index}">
+									<div class="test_content_nr_tt">
+										<i>[[${rStat.index+1}]]</i><span>([[${r.targetScore}]]分)</span><font>[[${r.title}]]</font>
+									</div>
+									<!-- 单项模板 -->
+									<div class="test_content_nr_main" th:if="${s.type eq 0}">
+										<ul>
+											<li class="option">
+
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="A" th:id="${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'"/>
+												<label th:for=${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'>
+													A.
+													<p class="ue" style="display: inline;">[[${r.optionA}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="B" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'>
+													B.
+													<p class="ue" style="display: inline;">[[${r.optionB}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="C" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_3'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_3'>
+													C.
+													<p class="ue" style="display: inline;">[[${r.optionC}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="D" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_4'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_4'>
+													D.
+													<p class="ue" style="display: inline;">[[${r.optionD}]]</p>
+												</label>
+											</li>
+										</ul><br>
+									</div>
+									<!-- 多项模板 -->
+									<div class="test_content_nr_main" th:if="${s.type eq 1}">
+										<ul>
+											<li class="option">
+
+												<input type="checkbox" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="A" th:id="${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'"/>
+												<label th:for=${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'>
+													A.
+													<p class="ue" style="display: inline;">[[${r.optionA}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="checkbox" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="B" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'>
+													B.
+													<p class="ue" style="display: inline;">[[${r.optionB}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="checkbox" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="C" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_3'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_3'>
+													C.
+													<p class="ue" style="display: inline;">[[${r.optionC}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="checkbox" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="D" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_4'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_4'>
+													D.
+													<p class="ue" style="display: inline;">[[${r.optionD}]]</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="checkbox" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="E" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_5'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_5'>
+													E.
+													<p class="ue" style="display: inline;">[[${r.optionE}]]</p>
+												</label>
+											</li>
+										</ul><br>
+									</div>
+									<!-- 判断模板 -->
+									<div class="test_content_nr_main" th:if="${s.type eq 2}">
+										<ul>
+											<li class="option">
+
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="对" th:id="${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'"/>
+												<label th:for=${sStat.index}+'_answer_'+${rStat.index+1}+'_option_1'>
+													A.
+													<p class="ue" style="display: inline;">对</p>
+												</label>
+											</li>
+											<li class="option">
+												<input type="radio" class="radioOrCheck" th:name="'paperId_'+${r.id}" th:value="错" th:id="${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'"/>
+												<label th:for=${sStat.index+1}+'_answer_'+${rStat.index+1}+'_option_2'>
+													B.
+													<p class="ue" style="display: inline;">错</p>
+												</label>
+											</li>
+										</ul><br>
+									</div>
+									<!-- 简答模板 -->
+									<div class="test_content_nr_main" th:if="${s.type eq 3}">
+										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}"></textarea>
+									</div>
+									<!-- 应用模板 -->
+									<div class="test_content_nr_main" th:if="${s.type eq 4}" th:name="'paperId_'+${r.id}">
+										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;"></textarea>
+									</div>
+
+								</li>
+							</ul>
+						</div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<div class="nr_right">
+			<div class="nr_rt_main">
+				<div class="rt_nr1">
+					<div class="rt_nr1_title">
+						<h1>
+							答题卡
+						</h1>
+						<p class="test_time">
+							<b class="alt-1">01:40</b>
+						</p>
+					</div>
+
+					<div class="rt_content" th:each="s : ${result.questionResults}">
+						<div class="rt_content_tt">
+							<h2>[[${s.name}]]</h2>
+							<p>
+								<span>共</span><i class="content_lit">[[${s.total}]]</i><span>题</span>
+							</p>
+						</div>
+						<div class="rt_content_nr answerSheet">
+							<ul>
+								<li th:each="r : ${s.questionVos}">
+									<a th:href="'#qu_'+${sStat.index}+'_'+${rStat.index}+''">[[${rStat.index+1}]]</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!--nr end-->
+	<div class="foot"></div>
+</div>
+
+<script src="/student/js/jquery-1.11.3.min.js"></script>
+<script src="/student/js/jquery.easy-pie-chart.js"></script>
+<!--时间js-->
+<script src="/student/time/jquery.countdown.js"></script>
+<script>
+    window.jQuery(function($) {
+        "use strict";
+
+        $('time').countDown({
+            with_separators : false
+        });
+        $('.alt-1').countDown({
+            css_class : 'countdown-alt-1'
+        });
+        $('.alt-2').countDown({
+            css_class : 'countdown-alt-2'
+        });
+
+    });
+
+
+    $(function() {
+        $('li.option label').click(function() {
+            debugger;
+            var examId = $(this).closest('.test_content_nr_main').closest('li').attr('id'); // 得到题目ID
+            var cardLi = $('a[href=#' + examId + ']'); // 根据题目ID找到对应答题卡
+            // 设置已答题
+            if(!cardLi.hasClass('hasBeenAnswer')){
+                cardLi.addClass('hasBeenAnswer');
+            }
+
+        });
+    });
+
+    function paperSubmit() {
+        if (confirm("是否提交考试？")) {
+            // js 获取form表单
+            var form_submit = document.getElementById('form-submit');
+            // 让form表单提交
+            form_submit.submit();
+        }
+    }
+</script>
+<div style="text-align:center;">
+</div>
+
+</body>
+
+</html>

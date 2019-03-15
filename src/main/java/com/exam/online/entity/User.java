@@ -64,6 +64,16 @@ public class User extends Model<User> {
      */
     private String avatar;
 
+    /**
+     * 创建时间
+     */
+    private String createTime;
+
+    /**
+     * 更新时间
+     */
+    private String updateTime;
+
     @Override
     protected Serializable pkVal() {
         return this.userId;

@@ -39,7 +39,7 @@ public class Question extends Model<Question> {
     /**
      * 题型
      */
-    private Integer type;
+    private String type;
 
     /**
      * 选项A内容

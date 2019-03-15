@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link th:href="@{/others/main.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/others/iconfont.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/others/test.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/bootstrap.min.css?v=3.3.6}" rel="stylesheet">
+    <script th:src="@{/js/jquery.min.js?v=2.1.4}"></script>
+    <script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+</head>
+<body>
+<div class="main">
+    <!--nr start-->
+    <div class="test_main">
+        <div class="nr_left">
+            <input type="hidden" name="studentId" th:value="${result.studentId}">
+            <input type="hidden" name="paperId" th:value="${result.paperId}">
+            <div th:if="${result.code eq 1}" style="text-align: center">
+                <h1 style="color: red">[[${result.msg}]]</h1>
+                <button class="btn btn-primary btn-lg" onclick="backList()">返回阅卷列表</button>
+            </div>
+            <div class="test" th:if="${result.code eq 0}">
+                <form action="" method="post">
+                    <div style="text-align:center;">
+                        <h3>[[${result.paperName}]]</h3>
+                    </div>
+                    <div th:each="s : ${result.questionResults}">
+                        <div class="test_content">
+                            <div class="test_content_title">
+                                <h2>[[${s.name}]]</h2>
+                                <p>
+                                    共[[${s.total}]]题，合计[[${s.score}]]分
+                                </p>
+                            </div>
+                        </div>
+                        <div class="test_content_nr" th:each="r : ${s.questionVos}">
+                            <ul>
+                                <li id="qu_0_0">
+                                    <div class="test_content_nr_tt">
+                                        <i>[[${rStat.index+1}]]</i><span>([[${r.targetScore}]]分)</span><font>[[${r.title}]]</font>
+                                    </div>
+                                    <!-- 单项模板 -->
+                                    <div class="test_content_nr_main" th:if="${s.type eq 0}">
+                                        <ul>
+                                            <li class="option">
+                                                <label>
+                                                    A.
+                                                    <small class="ue" style="display: inline;"
+                                                           th:text="${r.optionA}"></small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    B.
+                                                    <small class="ue" style="display: inline;"
+                                                           th:text="${r.optionB}"></small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    C.
+                                                    <small class="ue" style="display: inline;"
+                                                           th:text="${r.optionC}"></small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    D.
+                                                    <small class="ue" style="display: inline;"
+                                                           th:text="${r.optionD}"></small>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                        <br>
+                                        <small>学生答案：[[${r.studentAnswer}]]&nbsp;&nbsp;&nbsp;</small>
+                                        <small> 正确答案：[[${r.answer}]]</small><br>
+                                        <small>得分：<h4 style="color:red;display: inline" class="partA">[[${r.singleScore}]] </h4></small>
+                                    </div>
+                                    <!-- 多项模板 -->
+                                    <div class="test_content_nr_main" th:if="${s.type eq 1}">
+                                        <ul>
+                                            <li class="option">
+                                                <label>
+                                                    A.
+                                                    <small class="ue" style="display: inline;">[[${r.optionA}]]</small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    B.
+                                                    <small class="ue" style="display: inline;">[[${r.optionB}]]</small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    C.
+                                                    <small class="ue" style="display: inline;">[[${r.optionC}]]</small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    D.
+                                                    <small class="ue" style="display: inline;">[[${r.optionD}]]</small>
+                                                </label>
+                                            </li>
+                                            <li class="option">
+                                                <label>
+                                                    E.
+                                                    <small class="ue" style="display: inline;">[[${r.optionE}]]</small>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                        <br>
+                                        <small>学生答案：[[${r.studentAnswer}]]&nbsp;&nbsp;&nbsp;</small>
+                                        <small> 正确答案：[[${r.answer}]]</small><br>
+                                        <small>得分：<h4 style="color:red; display: inline" class="partA">[[${r.singleScore}]] </h4></small>
+                                    </div>
+                                    <!-- 判断模板 -->
+                                    <div class="test_content_nr_main" th:if="${s.type eq 2}">
+                                        <small>学生答案：[[${r.studentAnswer}]]&nbsp;&nbsp;&nbsp;</small>
+                                        <small>正确答案：[[${r.answer}]]</small><br>
+                                        <small>得分：<h4 style="color:red; display: inline" class="partA">[[${r.singleScore}]] </h4></small>
+                                    </div>
+                                    <!-- 简答模板 -->
+                                    <div class="test_content_nr_main" th:if="${s.type eq 3}">
+                                        <small>学生答案：[[${r.studentAnswer}]]</small>
+                                        <br>
+                                        <small>正确答案：[[${r.answer}]]</small>
+                                        <p><h4 style="color:red">请输入分数：<input type="text" width="300px">
+                                    </h4></p>
+                                    </div>
+                                    <!-- 应用模板 -->
+                                    <div class="test_content_nr_main" th:if="${s.type eq 4}">
+                                        <small>学生答案：[[${r.studentAnswer}]]</small>
+                                        <br>
+                                        <small>正确答案：[[${r.answer}]]</small>
+                                        <p><h4 style="color:red">请输入分数：<input type="text" width="300px">
+                                    </h4></p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+                <div style="text-align: right;">
+                    <button class="btn btn-primary btn-lg" onclick="total()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--nr end-->
+    <div class="foot"></div>
+</div>
+<div th:include="include::footer"></div>
+<script>
+    function backList() {
+        var data = {code:'0',msg:'正在返回'}
+        $.operate.successCallback(data);
+    }
+    function total(){
+        var str = $(".partA").text();
+        var array = str.split(' ');
+        var totalA = 0;
+        for(var i = 0; i < array.length; i++){
+            if(array[i] != ""){
+                totalA += parseInt(array[i]);
+            }
+        }
+
+        // 获取多选
+        var totalB = 0;
+        var txt = $('.main').find(':text'); // 获取所有文本框
+        for (var i = 0; i < txt.length; i++) {
+            if (txt.eq(i).val() != ""){
+                totalB += parseInt(txt.eq(i).val());
+            }
+        }
+        var score = totalA + totalB;
+        layer.confirm('计算总分为：'+score+',是否提交?', function(index){
+            $.ajax({
+                url: "/teacher/check/getScore",
+                type: "POST",
+                data: {
+                    "studentId": $("input[name='studentId']").val(),
+                    "paperId": $("input[name='paperId']").val(),
+                    "score": score
+                },
+                success: function (data) {
+                    $.operate.successCallback(data);
+                }
+            });
+            layer.close(index);
+        });
+    }
+</script>
+</body>
+
+</html>

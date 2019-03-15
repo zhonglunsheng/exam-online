@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
+	<script th:src="@{/layui/layui.js}"></script>
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+    <div class="layui-row">
+        <ul class="layui-nav" lay-filter="">
+            <li class="layui-nav-item"><a href="/student/main">首页</a></li>
+            <li class="layui-nav-item layui-this"><a href="/student/score/list">成绩中心</a></li>
+            <li class="layui-nav-item">
+                <a href=""><img src="/img/a8.jpg" class="layui-nav-img">[[${student.name}]]</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/student/profile">修改信息</a></dd>
+                    <dd><a href="/student/logOut">安全退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+	<div class="layui-row">
+		<div class="layui-col-xs12" style="padding-top: 5px;">
+			<h3><i class="layui-icon layui-icon-fire" style="font-size: 20px; color: black;"></i>近期考试成绩</h3>
+			<table class="layui-table">
+				<colgroup>
+					<col width="150">
+					<col width="200">
+					<col>
+				</colgroup>
+				<thead>
+				<tr>
+					<th>考试名称</th>
+					<th>满分</th>
+					<th>成绩</th>
+                    <th>考试时间</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="score : ${scores}">
+					<td>[[${score.paperName}]]</td>
+					<td><font style="color: red;">[[${score.paperScore}]]</font></td>
+					<td><font style="color: red;">[[${score.score}]]</font></td>
+                    <td>[[${score.createTime}]]</td>
+				</tr>
+				</tbody>
+			</table>
+			<div id="page"></div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+        var element = layui.element;
+
+        //…
+    });
+</script>
+</body>
+</html>

@@ -35,7 +35,7 @@
                     <div class="contact-box">
 	                        <div class="col-sm-4">
 	                            <div class="text-center">
-	                                <img alt="image" class="img-circle m-t-xs img-responsive" th:src="(${user.avatar} == '') ? @{/avatar/default.jpg} : ${user.avatar}">
+	                                <img alt="image" class="img-circle m-t-xs img-responsive" th:src="@{/avatar/default.jpg}">
 	                            </div>
 	                        </div>
 	                        <div class="col-sm-8">
@@ -56,23 +56,13 @@
         var userId = [[${user.userId}]];
         /*用户信息-修改*/
         function edit() {
-            layer.open({
-                type: 2 //此处以iframe举例
-                ,title: '个人信息'
-                ,area: ['600px','500px']
-                ,shade: 0
-                ,maxmin: true
-                ,content: '/user/profile/edit'});
+            var url = "/user/profile/edit/" + userId;
+            $.modal.open("修改用户", url);
         }
         /*用户管理-重置密码*/
         function resetPwd() {
-            layer.open({
-                type: 2 //此处以iframe举例
-                ,title: '修改密码'
-                ,area: ['600px','500px']
-                ,shade: 0
-                ,maxmin: true
-                ,content: '/user/profile/resetPwd'});
+            var url = '/user/profile/resetPwd/' + userId;
+            $.modal.open("重置密码", url, '800', '500');
         }
     </script>
     <div th:include="include::footer"></div>

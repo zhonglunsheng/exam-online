@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title></title>
+<link rel="stylesheet" th:href="@{layui/css/layui.css}"  media="all">
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+	<div class="layui-row">
+		<ul class="layui-nav" lay-filter="">
+			<li class="layui-nav-item"><a href="/student/main">首页</a></li>
+			<li class="layui-nav-item"><a href="/student/score/list">成绩中心</a></li>
+			<li class="layui-nav-item layui-this">
+				<a href=""><img src="/img/a8.jpg" class="layui-nav-img">我</a>
+				<dl class="layui-nav-child">
+					<dd><a href="/student/profile">修改信息</a></dd>
+					<dd><a href="/student/logOut">安全退出</a></dd>
+				</dl>
+			</li>
+		</ul>
+	</div>
+	<div class="layui-row" style="padding-top: 15px;">
+		<div class="layui-col-xs6">
+			<form class="layui-form" action="/student/profile/update" >
+				<div class="layui-form-item">
+					<label class="layui-form-label">学号</label>
+					<div class="layui-input-block">
+						<input type="hidden" name="studentId" th:value="${student.studentId}">
+						<input type="text" name="num" th:value="${student.num}" class="layui-input" readonly="readonly">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">姓名</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" th:value="${student.name}" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">性别</label>
+					<div class="layui-input-block">
+						<input type="radio" name="sex" value="男" title="男">
+						<input type="radio" name="sex" value="女" title="女" checked>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">密码</label>
+					<div class="layui-input-block">
+						<input type="password" name="password" placeholder="不填默认不修改" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">确认密码</label>
+					<div class="layui-input-block">
+						<input type="password" name="newPassword" placeholder="不填默认不修改" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary" onclick="resert()">重置</button>
+					</div>
+				</div>
+		</div>
+	</div>
+</div>
+<script th:src="@{/student/js/jquery-3.3.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/student/layui/layui.js}" type="text/javascript"></script>
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var password = $("input[name='password']").val();
+            var newPassword = $("input[name='newPassword']").val();
+            if (password != newPassword){
+                layer.msg("两次输入的密码不一致");
+			}
+            return true;
+        });
+    });
+
+    function resert() {
+        // var name = $("input[name='name']").val();
+        // // var sex = $("input[name='sex']:checked").val();
+        // var password = $("input[name='password']").val();
+        // var newPassword = $("input[name='newPassword']").val();
+    }
+</script>
+</body>
+</html>

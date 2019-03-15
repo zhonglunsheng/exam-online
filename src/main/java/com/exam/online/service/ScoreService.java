@@ -1,5 +1,6 @@
 package com.exam.online.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.exam.online.entity.Score;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,5 +13,4 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2019-02-11
  */
 public interface ScoreService extends IService<Score> {
-
 }

@@ -475,6 +475,27 @@
         			$.operate.submit(url, "post", "json", data);
         		});
             },
+            // 添加题库
+            addCommon: function(id) {
+                $.modal.confirm("确定添加该" + $.table._option.modalName + "题库吗？", function() {
+                    var url = $.common.isEmpty(id) ? $.table._option.removeUrl : $.table._option.removeUrl.replace("{id}", id);
+                    var data = { "ids": id };
+                    $.operate.submit(url, "post", "json", data);
+                });
+            },
+            // 批量添加题库
+            addAll: function() {
+                var rows = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.uniqueId);
+                if (rows.length == 0) {
+                    $.modal.alertWarning("请至少选择一条记录");
+                    return;
+                }
+                $.modal.confirm("确认要添加选中的" + rows.length + "条题库吗?", function() {
+                    var url = $.table._option.removeUrl;
+                    var data = { "ids": rows.join() };
+                    $.operate.submit(url, "post", "json", data);
+                });
+            },
             // 清空信息
             clean: function() {
             	$.modal.confirm("确定清空所有" + $.table._option.modalName + "吗？", function() {

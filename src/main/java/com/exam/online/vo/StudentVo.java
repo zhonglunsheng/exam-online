@@ -1,6 +1,7 @@
 package com.exam.online.vo;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.exam.online.entity.Student;
 import lombok.Data;
 
 /**
@@ -9,9 +10,10 @@ import lombok.Data;
  * @create 2019-02-11 19:28
  */
 @Data
-public class StudentVo {
+public class StudentVo extends Student {
+    private String className;
 
-    private Page page;
-    private String name;
-    private String num;
+    private String paperName;
+
+    private Integer score;
 }

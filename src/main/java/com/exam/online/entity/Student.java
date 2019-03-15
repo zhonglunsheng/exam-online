@@ -51,6 +51,12 @@ public class Student extends Model<Student> {
     private Integer classId;
 
     /**
+     * 密码
+     */
+    private String password;
+
+
+    /**
      * 创建时间
      */
     private String createTime;

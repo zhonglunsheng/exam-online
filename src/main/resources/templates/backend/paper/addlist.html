@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+
+<body class="gray-bg">
+<div class="container-div ui-layout-center">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="user-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            题目类型：<select name="type">
+                            <option value="">所有</option>
+                            <option value="单选题">单选题</option>
+                            <option value="多选题">多选题</option>
+                            <option value="判断">判断题</option>
+                            <option value="简单">简答题</option>
+                            <option value="应用">应用题</option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.addAll()">
+                <i class="fa fa-plus"></i> 批量添加
+            </a>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
+<script th:inline="javascript">
+    var prefix = "/admin/paper/question";
+
+    $(function() {
+        $('body').layout({ west__size: 185 });
+        queryUserList();
+    });
+
+    function queryUserList() {
+        var options = {
+            url: prefix + "/list/add",
+            removeUrl: prefix + "/add",
+            sortName: "createTime",
+            sortOrder: "desc",
+            modalName: "题库",
+            search: false,
+            showExport: false,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '题目ID '
+                },
+                {
+                    field: 'title',
+                    title: '标题 ',
+                    sortable: true
+                },
+                {
+                    field: 'type',
+                    title: '题型 ',
+                    sortable: true
+                },
+                {
+                    field: 'optionA',
+                    title: '选项A '
+                },
+                {
+                    field: 'optionB',
+                    title: '选项B '
+                },
+                {
+                    field: 'optionC',
+                    title: '选项C '
+                },
+                {
+                    field: 'optionD',
+                    title: '选项D '
+                },
+                {
+                    field: 'optionE',
+                    title: '选项E '
+                },
+                {
+                    field: 'answer',
+                    title: '答案 '
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间 '
+                },
+                {
+                    title: '操作 ',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs" href="#" onclick="$.operate.addCommon(\'' + row.id + '\')"><i class="fa fa-plus"></i>添加</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    }
+</script>
+</body>
+</html>

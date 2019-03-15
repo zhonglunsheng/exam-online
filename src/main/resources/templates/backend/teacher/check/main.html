@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+
+<body class="gray-bg">
+<div class="container-div ui-layout-center">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="user-form">
+                <input type="hidden" id="deptId" name="deptId">
+                <input type="hidden" id="parentId" name="parentId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            班级：<select name="classId">
+                            <option value="">所有</option>
+                            <option th:each="class : ${classList}" th:text="${class.className}" th:value="${class.classId}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            试卷：<select id="paperId" name="paperId">
+                            <option th:each="paper : ${paperList}" th:text="${paper.name}" th:value="${paper.id}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
+<script th:inline="javascript">
+    var prefix = "/teacher/check";
+
+    var paperId = $("#paperId option:selected").val();
+
+    var params = {
+        paperId:paperId
+    };
+
+    $(function() {
+        $('body').layout({ west__size: 185 });
+        queryUserList();
+    });
+
+    function queryUserList() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            sortOrder: "desc",
+            modalName: "阅卷",
+            search: false,
+            showExport: false,
+            queryParams: params,
+            columns: [{
+                checkbox: true
+            },
+            {
+                field: 'studentId',
+                title: '学生ID '
+            },
+            {
+                field: 'num',
+                title: '学号 ',
+                sortable: true
+            },
+            {
+                field: 'name',
+                title: '姓名 ',
+                sortable: true
+            },
+            {
+                field: 'className',
+                title: '班级 '
+            },
+            {
+                field: 'status',
+                title: '状态 '
+            },
+            {
+                title: '操作 ',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    actions.push('<a class="btn btn-success btn-xs" href="#" onclick="detail(\'' + row.studentId + '\')"><i class="fa fa-edit"></i>查看</a> ');
+                    return actions.join('');
+                }
+            }]
+        };
+        $.table.init(options);
+    }
+
+    function detail(studentId) {
+        paperId = $("#paperId option:selected").val();
+        var url = "/teacher/check/detail?studentId="+studentId+"&paperId="+paperId;
+        $.modal.openFull("重置密码", url);
+    }
+</script>
+</body>
+</html>

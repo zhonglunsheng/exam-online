@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<style type="text/css">
+    .toolbar {
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+    }
+    .text {
+        border: 1px solid #ccc;
+        height: 200px;
+    }
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-student-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">题目标题：</label>
+            <div class="col-sm-8">
+                <div id="div1" class="toolbar"> </div>
+                <div id="div2" class="text"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">题型：</label>
+            <div class="col-sm-8">
+                <input type="radio" id="single" value="单选题" name="type" />单选题&nbsp;&nbsp;
+                <input type="radio" id="many" value="多选题" name="type"/>多选题&nbsp;&nbsp;
+                <input type="radio" id="judge" value="判断" name="type"/>判断&nbsp;&nbsp;
+                <input type="radio" id="short" value="简答" name="type"/>简答&nbsp;&nbsp;
+                <input type="radio" id="application" value="应用" name="type"/>应用
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">选项A：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="optionA"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">选项B：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="optionB"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">选项C：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="optionC"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">选项D：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="optionD"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">选项E：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="optionE"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">答案：</label>
+            <div class="col-sm-8">
+                <textarea name="answer" placeholder="请输入内容,多个答案逗号隔开" class="form-control" rows="6"></textarea>
+            </div>
+
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
+<script type="text/javascript" src="//unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+<script>
+    var E = window.wangEditor
+
+    var editor1 = new E('#div1', '#div2')
+    // 自定义菜单配置
+    editor1.customConfig.menus = [
+        'head',  // 标题
+        'bold',  // 粗体
+        'italic',  // 斜体
+        'underline',  // 下划线
+        'strikeThrough',  // 删除线
+        'foreColor',  // 文字颜色
+        'backColor',  // 背景颜色
+        'list',  // 列表
+        'justify',  // 对齐方式
+        'quote',  // 引用
+        'table',  // 表格
+        'code',  // 插入代码
+        'undo',  // 撤销
+        'redo'  // 重复
+    ]
+    editor1.create()
+
+    $("#form-student-add").validate({
+        rules:{
+            title:{
+                required:true
+            },
+            answer:{
+                required:true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            add();
+        }
+    }
+
+    function add() {
+        var title = editor1.txt.text();
+        var optionA = $("input[name='optionA']").val();
+        var optionB = $("input[name='optionB']").val();
+        var optionC = $("input[name='optionC']").val();
+        var optionD = $("input[name='optionD']").val();
+        var optionE = $("input[name='optionE']").val();
+        var answer = $("textarea[name='answer']").val();
+        var type = $("input[name='type']:checked").val();
+        $.ajax({
+            cache : true,
+            type : "POST",
+            url : "/teacher/question/questionAdd",
+            data : {
+                "title": title,
+                "optionA": optionA,
+                "optionB": optionB,
+                "optionC": optionC,
+                "optionD": optionD,
+                "optionE": optionE,
+                "answer": answer,
+                "type": type
+            },
+            async : false,
+            error : function(request) {
+                $.modal.alertError("系统错误");
+            },
+            success : function(data) {
+                $.operate.successCallback(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+<link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+<body class="gray-bg">
+<div class="layui-container">
+    <br/><br/>
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div class="layui-btn-container">
+                <button name="" th:each="paper: ${paperList}"
+                        class="layui-btn layui-btn-sm layui-btn-radius layui-btn-primary"
+                        th:onclick="'javascript:clickChange('+${paper.id}+');'">[[${paper.name}]]
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div id="left" style="width: 100%;height:400px;"></div>
+        </div>
+    </div>
+</div>
+<div class="container-div ui-layout-center">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="user-form">
+                <input type="hidden" id="deptId" name="deptId">
+                <input type="hidden" id="parentId" name="parentId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            学号：<input type="text" name="num"/>
+                        </li>
+                        <li>
+                            姓名：<input type="text" name="name"/>
+                        </li>
+                        <li>
+                            班级：<select name="classId">
+                            <option value="">所有</option>
+                            <option th:each="class : ${classList}" th:text="${class.className}"
+                                    th:value="${class.classId}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            试卷：<select name="paperId">
+                            <option value="">所有</option>
+                            <option th:each="paper : ${paperList}" th:text="${paper.name}"
+                                    th:value="${paper.id}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+</body>
+<div th:include="include::footer"></div>
+<script th:src="@{/js/echarts.common.min.js}"></script>
+<script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
+<script type="text/javascript"  th:inline="javascript">
+    var paperId = [[${paperId}]];
+    $(document).ready(function () {
+        clickChange(paperId);
+    });
+    
+    var url = "";
+
+    function clickChange(id) {
+        url = "/teacher/score/data/" + id;
+
+        var myChart1 = echarts.init(document.getElementById('left'));
+        // 显示标题，图例和空的坐标轴
+        myChart1.setOption({
+            title: {
+                text: '成绩统计'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: []
+        });
+        myChart1.showLoading();
+        // 异步加载数据
+        $.get(url).done(function (data) {
+            myChart1.hideLoading();
+            // 填入数据
+            myChart1.setOption({
+                xAxis: {
+                    data: data.categories
+                },
+                series: data.series,
+                legend: {
+                    data: data.title
+                }
+            });
+        });
+    }
+
+    var prefix = "/teacher/score";
+
+    $(function () {
+        queryUserList();
+    });
+
+    function queryUserList() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            sortName: "createTime",
+            sortOrder: "desc",
+            modalName: "学生",
+            search: false,
+            showExport: false,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'num',
+                    title: '学号 ',
+                    sortable: true
+                },
+                {
+                    field: 'name',
+                    title: '姓名 ',
+                    sortable: true
+                },
+                {
+                    field: 'className',
+                    title: '班级名称 '
+                },
+                {
+                    field: 'paperName',
+                    title: '试卷 '
+                },
+
+                {
+                    field: 'score',
+                    title: '成绩 '
+                }]
+        };
+        $.table.init(options);
+    }
+</script>
+</html>

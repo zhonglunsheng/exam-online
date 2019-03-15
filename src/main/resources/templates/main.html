@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <script src="layui/layui.js"></script>
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+    <div class="layui-row">
+        <ul class="layui-nav" lay-filter="">
+            <li class="layui-nav-item layui-this"><a href="#">首页</a></li>
+            <li class="layui-nav-item"><a href="/student/score/list">成绩中心</a></li>
+            <li class="layui-nav-item">
+                <a href=""><img src="/img/a8.jpg" class="layui-nav-img">[[${student.name}]]</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/student/profile">修改信息</a></dd>
+                    <dd><a href="/student/logOut">安全退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs12" style="padding-top: 5px;">
+            <h3><i class="layui-icon layui-icon-flag" style="font-size: 20px; color: black;"></i>近期考试成绩</h3>
+            <table class="layui-table" lay-skin="nob">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>考试名称</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="exam : ${examList}">
+                    <td>[[${exam.name}]]</td>
+                    <td>[[${exam.startTime}]]</td>
+                    <td>[[${exam.endTime}]]</td>
+                    <td><a th:href="'/student/detail/'+${exam.id}"
+                           class="layui-btn layui-btn-sm layui-btn-radius">立刻考试</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function () {
+        var element = layui.element;
+
+        //…
+    });
+</script>
+</body>
+</html>

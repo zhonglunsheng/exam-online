@@ -60,16 +60,6 @@ public class Record extends Model<Record> {
      */
     private LocalDateTime updateTime;
 
-    /**
-     * 参考答案
-     */
-    private String paperAnswer;
-
-    /**
-     * 是否阅卷成功 0：成功 1：未成功
-     */
-    private Integer check;
-
 
     @Override
     protected Serializable pkVal() {

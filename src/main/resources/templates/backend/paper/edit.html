@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-student-edit">
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">试卷名称：</label>
+			<div class="col-sm-8">
+				<input class="form-control" type="hidden" th:value="${paper.id}" name="id"/>
+				<input class="form-control" type="text" id="name" name="name" th:value="${paper.name}"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">题型：</label>
+			<div class="col-sm-8">
+				<input type="checkbox" id="single" value="单选题" name="type" />单选题&nbsp;&nbsp;
+				<input type="checkbox" id="many" value="多选题" name="type"/>多选题&nbsp;&nbsp;
+				<input type="checkbox" id="judge" value="判断" name="type"/>判断&nbsp;&nbsp;
+				<input type="checkbox" id="short" value="简答" name="type"/>简答&nbsp;&nbsp;
+				<input type="checkbox" id="application" value="应用" name="type"/>应用
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">题型分值：</label>
+			<div class="col-sm-8">
+				<input class="form-control" type="text"  name="scores" placeholder="对应上面题型逗号隔开(例如2,8,10)"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">数量：</label>
+			<div class="col-sm-8">
+				<input class="form-control" type="text"  name="typeNums" placeholder="对应上面题型逗号隔开(例如2,3,4)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">开始时间：</label>
+			<div class="col-sm-8">
+				<input type="text" class="layui-input" id="strat" placeholder="开始时间" name="start" th:value="${paper.startTime}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">结束时间：</label>
+			<div class="col-sm-8">
+				<input type="text" class="layui-input" id="end" placeholder="结束时间" name="end" th:value="${paper.endTime}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">生成方式：</label>
+			<div class="col-sm-8">
+				<select id="random" class="form-control m-b">
+					<option value="0" selected="selected">随机</option>
+					<option value="1">固定</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">备注：</label>
+			<div class="col-sm-8">
+				<input class="form-control" type="remark" id="remark" name="remark" th:value="${paper.remark}"/>
+			</div>
+		</div>
+	</form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/layui/layui.js}"></script>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //日期时间选择器
+        laydate.render({
+            elem: '#strat'
+            ,type: 'datetime'
+        });
+
+        laydate.render({
+            elem: '#end'
+            ,type: 'datetime'
+        });
+    });
+
+    $("#form-student-edit").validate({
+        rules:{
+            name:{
+                required:true
+            },
+            scores:{
+                required:true
+            },
+            typeNums:{
+                required:true
+            },
+            start:{
+                required:true
+            },
+            end:{
+                required:true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            add();
+        }
+    }
+
+    function add() {
+        var name = $("input[name='name']").val();
+        var scores = $("input[name='scores']").val();
+        var typeNums = $("input[name='typeNums']").val();
+        var start = $("input[name='start']").val();
+        var end = $("input[name='end']").val();
+        var random = $("#random option:selected").val();
+        var id = $("input[name='id']").val();
+
+        var type_array=new Array();
+        $('input[name="type"]:checked').each(function(){
+            type_array.push($(this).val());//向数组中添加元素
+        });
+        var type=type_array.join(',');//将数组元素连接起来以构建一个字符
+        $.ajax({
+            cache : true,
+            type : "POST",
+            url : "/admin/paper/paperAdd",
+            data : {
+                "score": scores,
+                "typeNums": typeNums,
+                "startTime": start,
+                "type": type,
+                "endTime": end,
+                "random": random,
+                "name": name,
+				"id": id
+            },
+            async : false,
+            error : function(request) {
+                $.modal.alertError("系统错误");
+            },
+            success : function(data) {
+                $.operate.successCallback(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>

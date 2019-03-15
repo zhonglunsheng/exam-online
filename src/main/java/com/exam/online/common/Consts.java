@@ -7,8 +7,11 @@ package com.exam.online.common;
  */
 public class Consts {
     public static final String SALT = "exam";
+
     public interface COMOON{
         public static final String ARGUS_NULL = "传入参数为空";
+        public static final String SUCCESS = "操作成功";
+        public static final String ERROR = "操作失败";
     }
     public interface LOGIN{
         public static final String LOGIN_NULL = "账号或密码为空";

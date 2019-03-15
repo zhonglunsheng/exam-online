@@ -54,8 +54,9 @@ public class MD5Util {
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
 
     public static void main(String[] args) {
-        System.out.println(MD5EncodeUtf8("123456"));
-        // 60DAE9D237234EB6EB86A29E69FFB6E2
+        System.out.println(MD5EncodeUtf8("abc123"));
+        // 60DAE9D237234EB6EB86A29E69FFB6E2 123456
+        // 87F4D927D81AD1DFE1FF4B9B9CE35C90 abc123
     }
 
 }
