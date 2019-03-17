@@ -327,6 +327,7 @@ public class PaperController {
         if (page == null) {
             page = new Page();
         }
+
         QueryWrapper<Paper> queryWrapper = new QueryWrapper<>();
         if (Strings.isBlank(name)) {
             queryWrapper.like("name", name);
