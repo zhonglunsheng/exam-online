@@ -13,6 +13,4 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2019-02-11
  */
 public interface PaperService extends IService<Paper> {
-
-    Result paperRandom(Integer paperId);
 }

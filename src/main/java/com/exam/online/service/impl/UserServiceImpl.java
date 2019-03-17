@@ -28,7 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result login(String email, String password) {
-        Map<String, Object> inMap = new HashMap<>();
+        Map<String, Object> inMap = new HashMap<>(2);
         inMap.put("email", email);
         inMap.put("password", password);
         List<User> result = userMapper.selectByMap(inMap);

@@ -13,11 +13,9 @@ import com.exam.online.service.StudentClassService;
 import com.exam.online.service.StudentService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
-import com.exam.online.util.MD5Util;
+import com.exam.online.util.Md5Util;
 import com.exam.online.vo.StudentVo;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -108,8 +106,10 @@ public class StudentController {
         }
         // 按字段排序
         if (!StringUtils.isBlank(orderByColumn)&&!StringUtils.isBlank(isAsc)){
-            if ("createTime".equals(orderByColumn)) orderByColumn = "create_time";
-            if ("asc".equals(isAsc)){
+            if (Consts.Query.CREATE_TIME.equals(orderByColumn)) {
+                orderByColumn = "create_time";
+            }
+            if (Consts.Query.ASC.equals(isAsc)) {
                 queryWrapper.orderByAsc(orderByColumn);
             }else{
                 queryWrapper.orderByDesc(orderByColumn);
@@ -131,7 +131,9 @@ public class StudentController {
                 Integer classId = s.getClassId();
                 if (classId != null) {
                     StudentClass studentClass = studentClassService.getById(classId);
-                    if (studentClass != null) studentVo.setClassName(studentClass.getClassName());
+                    if (studentClass != null) {
+                        studentVo.setClassName(studentClass.getClassName());
+                    }
                 }
                 rows.add(studentVo);
             }
@@ -149,7 +151,7 @@ public class StudentController {
     public Result studentAdd(Student student){
         if (student != null){
             if (student.getStudentId() == null){
-                student.setPassword(MD5Util.MD5EncodeUtf8(student.getPassword()));
+                student.setPassword(Md5Util.md5Encodeutf8(student.getPassword()));
                 student.setCreateTime(DateTimeUtil.dateToStr(new Date()));
                 student.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
             }
@@ -166,7 +168,7 @@ public class StudentController {
     @PostMapping(value = "/remove")
     @ResponseBody
     public Result studentRemove(String ids){
-        boolean result = studentService.removeByIds(CommonUtil.StrToList(ids));
+        boolean result = studentService.removeByIds(CommonUtil.strToList(ids));
         if (result){
             return Result.success();
         }else{
@@ -182,10 +184,10 @@ public class StudentController {
     @ResponseBody
     public Result resetStudentPwd(Integer studentId, String password){
         if (studentId == null || StringUtils.isBlank(password)){
-            return Result.error(Consts.COMOON.ARGUS_NULL);
+            return Result.error(Consts.Common.ARGUS_NULL);
         }
         Student student = studentService.getById(studentId);
-        student.setPassword(MD5Util.MD5EncodeUtf8(password));
+        student.setPassword(Md5Util.md5Encodeutf8(password));
         studentService.updateById(student);
         return Result.success();
     }

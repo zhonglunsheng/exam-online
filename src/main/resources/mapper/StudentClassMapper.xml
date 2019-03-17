@@ -18,8 +18,4 @@
         class_id, class_name, create_time, update_time
     </sql>
 
-    <select id="list" resultType="int">
-        select count(*) from student_class
-    </select>
-
 </mapper>

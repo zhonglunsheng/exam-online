@@ -196,7 +196,9 @@ public class ScoreController {
                 Integer classId = s.getClassId();
                 if (classId != null) {
                     StudentClass studentClass = studentClassService.getById(classId);
-                    if (studentClass != null) scoreVo.setClassName(studentClass.getClassName());
+                    if (studentClass != null) {
+                        scoreVo.setClassName(studentClass.getClassName());
+                    }
                 }
                 scoreVo.setPaperName(paperService.getById(e.getPaperId()).getName());
                 scoreVo.setScore(e.getStudentScore());

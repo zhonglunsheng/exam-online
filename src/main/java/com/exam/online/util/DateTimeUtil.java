@@ -8,14 +8,15 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
- * Created by geely
+ * @author zhonglunsheng
+ * @Description 时间转换工具
+ * @create 2019-02-18 16:43
  */
 public class DateTimeUtil {
 
-    //joda-time
-
-    //str->Date
-    //Date->str
+    /**
+     * 转换格式默认 yyyy-MM-dd HH:mm:ss
+     */
     public static final String STANDARD_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 

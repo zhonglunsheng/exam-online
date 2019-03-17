@@ -16,7 +16,7 @@ public class CommonUtil {
      * @param ids
      * @return
      */
-    public static List<Integer> StrToList(String ids){
+    public static List<Integer> strToList(String ids) {
         String[] id = ids.split(",");
         List<Integer> idList = new ArrayList<>();
         for (String index:
@@ -31,7 +31,7 @@ public class CommonUtil {
      * @param array
      * @return
      */
-    public static String ArrayForIntToStr(int[] array){
+    public static String arrayForIntToStr(int[] array) {
         String[] str= new String[array.length];
         for (int i = 0; i < array.length; i++) {
             str[i] = array[i]+"";

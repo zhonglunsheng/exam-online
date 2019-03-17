@@ -14,7 +14,6 @@ import com.exam.online.service.QuestionService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -86,7 +84,7 @@ public class QuestionController {
     public Result questionRemove(String ids){
         List<PaperQuestion> paperQuestionList = paperQuestionService.list(new QueryWrapper<PaperQuestion>().in("question_id", ids));
         if (paperQuestionList.size() == 0){
-            questionService.removeByIds(CommonUtil.StrToList(ids));
+            questionService.removeByIds(CommonUtil.strToList(ids));
             return Result.success("操作成功");
         }else{
             return Result.success("删除失败！该题目有试卷调用");
@@ -121,8 +119,10 @@ public class QuestionController {
         }
         // 按字段排序
         if (!StringUtils.isBlank(orderByColumn)&&!StringUtils.isBlank(isAsc)){
-            if ("createTime".equals(orderByColumn)) orderByColumn = "create_time";
-            if ("asc".equals(isAsc)){
+            if (Consts.Query.CREATE_TIME.equals(orderByColumn)) {
+                orderByColumn = "create_time";
+            }
+            if (Consts.Query.ASC.equals(isAsc)) {
                 queryWrapper.orderByAsc(orderByColumn);
             }else{
                 queryWrapper.orderByDesc(orderByColumn);

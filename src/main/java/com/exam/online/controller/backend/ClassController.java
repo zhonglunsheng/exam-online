@@ -119,7 +119,7 @@ public class ClassController {
         if (count != 0){
             return Result.error("该班级下有学生不能删除");
         }
-        studentClassService.removeByIds(CommonUtil.StrToList(ids));
-        return Result.success(Consts.COMOON.SUCCESS);
+        studentClassService.removeByIds(CommonUtil.strToList(ids));
+        return Result.success(Consts.Common.SUCCESS);
     }
 }

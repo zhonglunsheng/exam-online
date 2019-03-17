@@ -1,11 +1,12 @@
 package com.exam.online.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.exam.online.common.Consts;
 import com.exam.online.common.Result;
 import com.exam.online.entity.*;
 import com.exam.online.service.*;
 import com.exam.online.util.DateTimeUtil;
-import com.exam.online.util.MD5Util;
+import com.exam.online.util.Md5Util;
 import com.exam.online.vo.ScoreVo;
 import com.exam.online.vo.exam.QuestionResult;
 import com.exam.online.vo.exam.QuestionVo;
@@ -76,7 +77,7 @@ public class StudentFrontController {
     public Result doLogin(Student student, HttpSession session) {
         String num = student.getNum();
         String password = student.getPassword();
-        password = MD5Util.MD5EncodeUtf8(password);
+        password = Md5Util.md5Encodeutf8(password);
         List<Student> studentList = studentService.list(new QueryWrapper<Student>()
                 .eq("password", password)
                 .eq("num", num));
@@ -198,7 +199,7 @@ public class StudentFrontController {
     @RequestMapping("/student/paper/submit")
     public String paperSubmit(HttpServletRequest request, Integer studentId, Integer paperId) {
         Map<String, String[]> param = request.getParameterMap();
-        if (param.size() == 2) {
+        if (param.size() == Consts.Submit.BLANK_SUBMIT) {
             // 交白卷
             Score score = new Score();
             score.setStudentId(studentId);
@@ -211,7 +212,7 @@ public class StudentFrontController {
             // 判断试卷是否全是主观题
             Paper paper = paperService.getById(paperId);
             String[] type = paper.getType().split(",");
-            boolean reuslt = type[3].equals("1") || type[4].equals("1");
+            boolean reuslt = "1".equals(type[3]) || "1".equals(type[4]);
             int score = 0;
             for (Map.Entry<String, String[]> entry : param.entrySet()) {
                 if (entry.getKey().contains("paperId_")) {
@@ -280,7 +281,8 @@ public class StudentFrontController {
             String[] score = paper.getScore().split(",");
             String[] num = paper.getTypeNums().split(",");
             Integer total = 0;
-            for (int i = 0; i < 5; i++) {
+            Integer size = 5;
+            for (int i = 0; i < size; i++) {
                 if (!num[i].equals(0)) {
                     total += Integer.parseInt(num[i]) * Integer.parseInt(score[i]);
                 }
@@ -332,12 +334,13 @@ public class StudentFrontController {
         String jsonStr = "";
 
         File file = ResourceUtils.getFile("classpath:json.txt");
-        ; // 绝对路径或相对路径都可以，写入文件时演示相对路径,读取以上路径的input.txt文件
+        // 绝对路径或相对路径都可以，写入文件时演示相对路径,读取以上路径的input.txt文件
         //防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw;
         //不关闭文件会导致资源的泄露，读写文件都同理
         //Java7的try-with-resources可以优雅关闭文件，异常时自动关闭文件；详细解读https://stackoverflow.com/a/12665271
         try (FileReader reader = new FileReader(file);
-             BufferedReader br = new BufferedReader(reader) // 建立一个对象，它把文件内容转成计算机能读懂的语言
+             // 建立一个对象，它把文件内容转成计算机能读懂的语言
+             BufferedReader br = new BufferedReader(reader)
         ) {
             String line;
             //网友推荐更加简洁的写法

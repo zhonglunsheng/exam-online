@@ -8,14 +8,11 @@ import com.exam.online.common.Consts;
 import com.exam.online.common.PageResult;
 import com.exam.online.common.Result;
 import com.exam.online.entity.Student;
-import com.exam.online.entity.StudentClass;
 import com.exam.online.entity.User;
-import com.exam.online.service.StudentClassService;
 import com.exam.online.service.UserService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
-import com.exam.online.util.MD5Util;
-import com.exam.online.vo.StudentVo;
+import com.exam.online.util.Md5Util;
 import com.exam.online.vo.TeacherVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -96,9 +93,13 @@ public class TeacherController {
         }
         // 按字段排序
         if (!StringUtils.isBlank(orderByColumn)&&!StringUtils.isBlank(isAsc)){
-            if ("userId".equals(orderByColumn)) orderByColumn = "user_id";
-            if ("createTime".equals(orderByColumn)) orderByColumn = "create_time";
-            if ("asc".equals(isAsc)){
+            if (Consts.Query.USER_ID.equals(orderByColumn)) {
+                orderByColumn = "user_id";
+            }
+            if (Consts.Query.CREATE_TIME.equals(orderByColumn)) {
+                orderByColumn = "create_time";
+            }
+            if (Consts.Query.ASC.equals(isAsc)) {
                 queryWrapper.orderByAsc(orderByColumn);
             }else{
                 queryWrapper.orderByDesc(orderByColumn);
@@ -115,8 +116,12 @@ public class TeacherController {
                 BeanUtils.copyProperties(u, teacherVo);
                 Integer classId = u.getRole();
                 if (classId != null) {
-                    if (classId == 0) teacherVo.setRoleName("管理员");
-                    if (classId == 1) teacherVo.setRoleName("教师");
+                    if (classId == 0) {
+                        teacherVo.setRoleName("管理员");
+                    }
+                    if (classId == 1) {
+                        teacherVo.setRoleName("教师");
+                    }
                 }
                 rows.add(teacherVo);
             }
@@ -137,7 +142,7 @@ public class TeacherController {
     @ResponseBody
     public Result teacherAdd(User user){
         if (user != null){
-            user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
+            user.setPassword(Md5Util.md5Encodeutf8(user.getPassword()));
             user.setCreateTime(DateTimeUtil.dateToStr(new Date()));
             user.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
             userService.saveOrUpdate(user);
@@ -153,7 +158,7 @@ public class TeacherController {
     @PostMapping(value = "/remove")
     @ResponseBody
     public Result teacherRemove(String ids){
-        boolean result = userService.removeByIds(CommonUtil.StrToList(ids));
+        boolean result = userService.removeByIds(CommonUtil.strToList(ids));
         if (result){
             return Result.success();
         }else{
@@ -169,10 +174,10 @@ public class TeacherController {
     @ResponseBody
     public Result resetStudentPwd(Integer userId, String password){
         if (userId == null || StringUtils.isBlank(password)){
-            return Result.error(Consts.COMOON.ARGUS_NULL);
+            return Result.error(Consts.Common.ARGUS_NULL);
         }
         User teacher = userService.getById(userId);
-        teacher.setPassword(MD5Util.MD5EncodeUtf8(password));
+        teacher.setPassword(Md5Util.md5Encodeutf8(password));
         userService.updateById(teacher);
         return Result.success();
     }

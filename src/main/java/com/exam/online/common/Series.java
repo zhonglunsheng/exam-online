@@ -4,8 +4,11 @@ import lombok.Data;
 
 import java.util.List;
 
-//                type:'line',
-//                        stack: '总量',
+/**
+ * @author zhonglunsheng
+ * @Description Series数据结构封装
+ * @create 2019-02-18 16:43
+ */
 @Data
 public class Series {
     private String name;

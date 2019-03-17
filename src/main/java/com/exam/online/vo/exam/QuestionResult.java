@@ -11,13 +11,21 @@ import java.util.List;
  */
 @Data
 public class QuestionResult {
-    // 每个题型总分
+    /**
+     * 每个题型总分
+     */
     private Integer score;
-    // 题型名称
+    /**
+     * 题型名称
+     */
     private String name;
-    // 题型
+    /**
+     * 题型
+     */
     private Integer type;
-    // 多少题
+    /**
+     * 多少题
+     */
     private Integer total;
     private List<QuestionVo> questionVos;
 }

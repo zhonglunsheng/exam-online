@@ -17,9 +17,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements PaperService {
-
-    @Override
-    public Result paperRandom(Integer paperId) {
-        return null;
-    }
 }

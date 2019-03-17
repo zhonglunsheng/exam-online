@@ -10,11 +10,6 @@ import java.util.List;
  * @Description
  * @create 2019-02-14 16:11
  */
-
-//{
-//        "total": 13,
-//        "code": 0,
-//        "rows": [
 @Data
 public class PageResult <T> implements Serializable {
     private Long total;

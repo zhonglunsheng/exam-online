@@ -113,8 +113,10 @@ public class PaperController {
         }
         // 按字段排序
         if (!StringUtils.isBlank(orderByColumn) && !StringUtils.isBlank(isAsc)) {
-            if ("createTime".equals(orderByColumn)) orderByColumn = "create_time";
-            if ("asc".equals(isAsc)) {
+            if (Consts.Query.CREATE_TIME.equals(orderByColumn)) {
+                orderByColumn = "create_time";
+            }
+            if (Consts.Query.ASC.equals(isAsc)) {
                 queryWrapper.orderByAsc(orderByColumn);
             } else {
                 queryWrapper.orderByDesc(orderByColumn);
@@ -195,6 +197,7 @@ public class PaperController {
                                 typeNum.append(typeNums[i] + " ");
                                 totalScore += Integer.parseInt(typeNums[i]) * Integer.parseInt(scores[i]);
                                 break;
+                            default:
                         }
                     }
                 }
@@ -279,18 +282,19 @@ public class PaperController {
                     typeNumsInt[4] = Integer.parseInt(typeNums[i]);
                     total += scoreInt[4] * typeNumsInt[4];
                     break;
+                default:
             }
         }
-        String type = CommonUtil.ArrayForIntToStr(typeInt);
-        String score = CommonUtil.ArrayForIntToStr(scoreInt);
-        String typeNum = CommonUtil.ArrayForIntToStr(typeNumsInt);
+        String type = CommonUtil.arrayForIntToStr(typeInt);
+        String score = CommonUtil.arrayForIntToStr(scoreInt);
+        String typeNum = CommonUtil.arrayForIntToStr(typeNumsInt);
         paper.setType(type);
         paper.setScore(score);
         paper.setTypeNums(typeNum);
 
         paperService.saveOrUpdate(paper);
 
-        return Result.success(Consts.COMOON.SUCCESS);
+        return Result.success(Consts.Common.SUCCESS);
     }
 
     /**
@@ -302,13 +306,13 @@ public class PaperController {
     @PostMapping(value = "/remove")
     @ResponseBody
     public Result studentRemove(String ids) {
-        boolean flag = paperService.removeByIds(CommonUtil.StrToList(ids));
+        boolean flag = paperService.removeByIds(CommonUtil.strToList(ids));
         // 删除改试卷下的所有关联的题目
-        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("paper_id", CommonUtil.StrToList(ids)));
+        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("paper_id", CommonUtil.strToList(ids)));
         if (flag && result) {
-            return Result.success(Consts.COMOON.SUCCESS);
+            return Result.success(Consts.Common.SUCCESS);
         } else {
-            return Result.error(Consts.COMOON.ERROR);
+            return Result.error(Consts.Common.ERROR);
         }
     }
 
@@ -327,20 +331,7 @@ public class PaperController {
         if (Strings.isBlank(name)) {
             queryWrapper.like("name", name);
         }
-        return Result.success(paperService.page(page, queryWrapper), Consts.COMOON.SUCCESS);
-    }
-
-    /**
-     * 试卷生成
-     *
-     * @return
-     */
-    @RequestMapping("/random")
-    public Result paperRandom(Integer paperId) {
-        if (paperId == null) {
-            return Result.error(Consts.COMOON.ARGUS_NULL);
-        }
-        return paperService.paperRandom(paperId);
+        return Result.success(paperService.page(page, queryWrapper), Consts.Common.SUCCESS);
     }
 
     /**
@@ -374,8 +365,10 @@ public class PaperController {
         }
         // 按字段排序
         if (!StringUtils.isBlank(orderByColumn) && !StringUtils.isBlank(isAsc)) {
-            if ("createTime".equals(orderByColumn)) orderByColumn = "create_time";
-            if ("asc".equals(isAsc)) {
+            if (Consts.Query.CREATE_TIME.equals(orderByColumn)) {
+                orderByColumn = "create_time";
+            }
+            if (Consts.Query.ASC.equals(isAsc)) {
                 queryWrapper.orderByAsc(orderByColumn);
             } else {
                 queryWrapper.orderByDesc(orderByColumn);
@@ -394,7 +387,7 @@ public class PaperController {
                 questionIds.add(p.getQuestionId());
             }
         }
-        if ("select".equals(operate)) {
+        if (Consts.Operate.SELECT.equals(operate)) {
 
             if (total != 0) {
                 for (PaperQuestion p :
@@ -422,7 +415,7 @@ public class PaperController {
     @PostMapping(value = "/question/add")
     @ResponseBody
     public Result questionAdd(String ids, HttpSession session) {
-        List<Integer> idList = CommonUtil.StrToList(ids);
+        List<Integer> idList = CommonUtil.strToList(ids);
         List<PaperQuestion> paperQuestions = new ArrayList<>();
         Integer paperId = (Integer) session.getAttribute("paperId");
         PaperQuestion paperQuestion = null;
@@ -436,9 +429,9 @@ public class PaperController {
 
         boolean result = paperQuestionService.saveBatch(paperQuestions);
         if (result) {
-            return Result.success(Consts.COMOON.SUCCESS);
+            return Result.success(Consts.Common.SUCCESS);
         } else {
-            return Result.error(Consts.COMOON.ERROR);
+            return Result.error(Consts.Common.ERROR);
         }
     }
 
@@ -451,11 +444,11 @@ public class PaperController {
     @PostMapping(value = "/question/remove")
     @ResponseBody
     public Result questionRemove(String ids) {
-        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("question_id", CommonUtil.StrToList(ids)));
+        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("question_id", CommonUtil.strToList(ids)));
         if (result) {
-            return Result.success(Consts.COMOON.SUCCESS);
+            return Result.success(Consts.Common.SUCCESS);
         } else {
-            return Result.error(Consts.COMOON.ERROR);
+            return Result.error(Consts.Common.ERROR);
         }
     }
 

@@ -196,7 +196,7 @@ public class CheckPaperController {
         Paper paper = paperService.getById(checkReq.getPaperId());
         String endTime = paper.getEndTime();
         Date time = DateTimeUtil.strToDate(endTime);
-        boolean status = new Date().getTime() - time.getTime() > 0;
+        boolean status = System.currentTimeMillis() - time.getTime() > 0;
         if (!status){
             return PageResult.success(0L, new ArrayList());
         }
@@ -246,9 +246,9 @@ public class CheckPaperController {
 
         boolean result = scoreService.save(param);
         if (result){
-            return Result.success(Consts.COMOON.SUCCESS);
+            return Result.success(Consts.Common.SUCCESS);
         }else{
-            return Result.error(Consts.COMOON.ERROR);
+            return Result.error(Consts.Common.ERROR);
         }
     }
 }

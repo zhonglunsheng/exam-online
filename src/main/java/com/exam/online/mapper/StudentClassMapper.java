@@ -17,6 +17,4 @@ import java.util.List;
  */
 public interface StudentClassMapper extends BaseMapper<StudentClass> {
 
-   Integer list();
-
 }
