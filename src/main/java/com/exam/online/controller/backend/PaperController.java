@@ -288,8 +288,6 @@ public class PaperController {
         paper.setScore(score);
         paper.setTypeNums(typeNum);
 
-
-
         paperService.saveOrUpdate(paper);
 
         return Result.success(Consts.COMOON.SUCCESS);
