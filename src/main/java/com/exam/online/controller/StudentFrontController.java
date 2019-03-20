@@ -1,12 +1,17 @@
 package com.exam.online.controller;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.exam.online.access.UserContext;
 import com.exam.online.common.Consts;
 import com.exam.online.common.Result;
 import com.exam.online.entity.*;
 import com.exam.online.service.*;
+import com.exam.online.util.CookieUtil;
 import com.exam.online.util.DateTimeUtil;
 import com.exam.online.util.Md5Util;
+import com.exam.online.util.RedisPoolUtil;
 import com.exam.online.vo.ScoreVo;
 import com.exam.online.vo.exam.QuestionResult;
 import com.exam.online.vo.exam.QuestionVo;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -74,7 +80,7 @@ public class StudentFrontController {
      */
     @RequestMapping("/login")
     @ResponseBody
-    public Result doLogin(Student student, HttpSession session) {
+    public Result doLogin(Student student, HttpServletResponse response) {
         String num = student.getNum();
         String password = student.getPassword();
         password = Md5Util.md5Encodeutf8(password);
@@ -83,7 +89,9 @@ public class StudentFrontController {
                 .eq("num", num));
 
         if (studentList != null && studentList.size() != 0) {
-            session.setAttribute("student", studentList.get(0));
+            String token = UUID.randomUUID().toString();
+            RedisPoolUtil.set(token, JSON.toJSONString(studentList.get(0)));
+            CookieUtil.writeLoginToken(response, Consts.Common.STUDENT_TOKEN, token);
             return Result.success();
         } else {
             return Result.error("用户名或密码错误");
@@ -97,8 +105,7 @@ public class StudentFrontController {
      */
     @RequestMapping("/student/main")
     public String main(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Student student = (Student) session.getAttribute("student");
+        Student student = (Student)UserContext.getUser();
         List<Score> scoreList = scoreService.list(new QueryWrapper<Score>().eq("student_id", student.getStudentId()));
         List<Record> recordList = recordService.list(new QueryWrapper<Record>().eq("student_id", student.getStudentId()));
         List<Paper> list = null;
@@ -131,7 +138,7 @@ public class StudentFrontController {
         String[] type = paper.getType().split(",");
         String[] num = paper.getTypeNums().split(",");
         String[] score = paper.getScore().split(",");
-        String[] typeName = new String[]{"单选题", "多选题", "判断", "简答", "应用"};
+        String[] typeName = new String[]{"单选题", "多选题", "判断题", "简答题", "应用题"};
 
         // 获取试卷题库
         List<PaperQuestion> paperQuestions = paperQuestionService.list(new QueryWrapper<PaperQuestion>().eq("paper_id", paperId));
@@ -140,7 +147,7 @@ public class StudentFrontController {
             total += Integer.parseInt(num[i]);
         }
         if (paperQuestions.size() == 0 || paperQuestions.size() < total) {
-            model.addAttribute("student", (Student) session.getAttribute("student"));
+            model.addAttribute("student", (Student)UserContext.getUser());
             return "error/err500";
         }
         List<Integer> ids = new ArrayList<>();
@@ -151,7 +158,7 @@ public class StudentFrontController {
 
         Integer questionNum = null;
         Random random = new Random();
-        Student student = (Student) session.getAttribute("student");
+        Student student = (Student)UserContext.getUser();
         StudentPaperVo paperVo = new StudentPaperVo();
         paperVo.setPaperId(paperId);
         paperVo.setStudentId(student.getStudentId());
@@ -176,11 +183,11 @@ public class StudentFrontController {
                     QuestionVo qVo = new QuestionVo();
                     qVo.setTargetScore(Integer.parseInt(score[i]));
                     BeanUtils.copyProperties(q, qVo);
-                    qVo.setOptionA(qVo.getOptionA().replace("&nbsp;", ""));
-                    qVo.setOptionB(qVo.getOptionB().replace("&nbsp;", ""));
-                    qVo.setOptionC(qVo.getOptionC().replace("&nbsp;", ""));
-                    qVo.setOptionD(qVo.getOptionD().replace("&nbsp;", ""));
-                    qVo.setOptionE(qVo.getOptionE().replace("&nbsp;", ""));
+                    qVo.setOptionA(qVo.getOptionA() != null ?qVo.getOptionA().replace("&nbsp;", ""):qVo.getOptionA());
+                    qVo.setOptionB(qVo.getOptionB() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionB());
+                    qVo.setOptionC(qVo.getOptionC() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionC());
+                    qVo.setOptionD(qVo.getOptionD() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionD());
+                    qVo.setOptionE(qVo.getOptionE() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionE());
                     if (!questionVos.contains(qVo)) {
                         questionVos.add(qVo);
                     }
@@ -269,8 +276,8 @@ public class StudentFrontController {
     }
 
     @RequestMapping("/student/score/list")
-    public String getScore(Model model, HttpSession session) {
-        Student student = (Student) session.getAttribute("student");
+    public String getScore(Model model) {
+        Student student = (Student)UserContext.getUser();
         List<Score> scoreList = scoreService.list(new QueryWrapper<Score>().eq("student_id", student.getStudentId()));
         List<ScoreVo> scoreVos = new ArrayList<>();
         for (Score e :
@@ -298,9 +305,8 @@ public class StudentFrontController {
     }
 
     @RequestMapping("/student/profile")
-    public String profile(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Student student = (Student) session.getAttribute("student");
+    public String profile(Model model) {
+        Student student = (Student)UserContext.getUser();
         if (student == null) {
             return "index";
         }
@@ -323,8 +329,11 @@ public class StudentFrontController {
     }
 
     @RequestMapping("/student/logOut")
-    public String logOut(HttpSession session) {
-        session.invalidate();
+    public String logOut(HttpServletRequest request, HttpServletResponse response) {
+        String token = CookieUtil.readLoginToken(request, Consts.Common.STUDENT_TOKEN);
+        RedisPoolUtil.del(token);
+        // 删除cookie
+        CookieUtil.delLoginToken(request, response, Consts.Common.USER_TOKEN);
         return "redirect:/index";
     }
 

@@ -16,6 +16,7 @@ import com.exam.online.service.PaperService;
 import com.exam.online.service.QuestionService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
+import com.exam.online.util.RedisPoolUtil;
 import com.exam.online.vo.PaperVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.util.Strings;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.exam.online.common.Consts.Question.TYPENAME;
 
 /**
  * <p>
@@ -67,16 +70,27 @@ public class PaperController {
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, Model model) {
         Paper paper = null;
+        StringBuffer typeBuff = new StringBuffer();
         if (id != null) {
             paper = paperService.getById(id);
+            paper.setState(1);
+            paperService.updateById(paper);
+            String[] typeName = paper.getType().split(",");
+            for (int i = 0; i < TYPENAME.length; i++) {
+                if (Integer.parseInt(typeName[i]) != 0){
+                    typeBuff.append(TYPENAME[i]);
+                }
+            }
+
+            paper.setType(typeBuff.toString());
         }
         model.addAttribute("paper", paper);
         return viewName + "edit";
     }
 
     @GetMapping("/findQuestion/{id}")
-    public String findQuestion(@PathVariable(value = "id", required = false) Integer id, Model model, HttpSession session) {
-        session.setAttribute("paperId", id);
+    public String findQuestion(@PathVariable(value = "id", required = false) Integer id, Model model) {
+        RedisPoolUtil.set("paperId", id+"");
         return viewName + "qlist";
     }
 
@@ -221,9 +235,6 @@ public class PaperController {
     @PostMapping("/paperAdd")
     @ResponseBody
     public Result paperSave(Paper paper) {
-        if (paper.getId() == null) {
-            paper.setCreateTime(DateTimeUtil.dateToStr(new Date()));
-        }
         paper.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
         // 字段拆分转换
         String[] scores = paper.getScore().split(",");
@@ -254,32 +265,32 @@ public class PaperController {
             switch (types[i]) {
                 case "单选题":
                     typeInt[0] = 1;
-                    scoreInt[0] = Integer.parseInt(scores[i]);
-                    typeNumsInt[0] = Integer.parseInt(typeNums[i]);
-                    total += scoreInt[0] * typeNumsInt[i];
+                    scoreInt[0] = Integer.parseInt(scores[0]);
+                    typeNumsInt[0] = Integer.parseInt(typeNums[0]);
+                    total += scoreInt[0] * typeNumsInt[0];
                     break;
                 case "多选题":
                     typeInt[1] = 1;
-                    scoreInt[1] = Integer.parseInt(scores[i]);
-                    typeNumsInt[1] = Integer.parseInt(typeNums[i]);
+                    scoreInt[1] = Integer.parseInt(scores[1]);
+                    typeNumsInt[1] = Integer.parseInt(typeNums[1]);
                     total += scoreInt[1] * typeNumsInt[1];
                     break;
-                case "判断":
+                case "判断题":
                     typeInt[2] = 1;
-                    scoreInt[2] = Integer.parseInt(scores[i]);
-                    typeNumsInt[2] = Integer.parseInt(typeNums[i]);
+                    scoreInt[2] = Integer.parseInt(scores[2]);
+                    typeNumsInt[2] = Integer.parseInt(typeNums[2]);
                     total += scoreInt[2] * typeNumsInt[2];
                     break;
-                case "简答":
+                case "简答题":
                     typeInt[3] = 1;
-                    scoreInt[3] = Integer.parseInt(scores[i]);
-                    typeNumsInt[3] = Integer.parseInt(typeNums[i]);
+                    scoreInt[3] = Integer.parseInt(scores[3]);
+                    typeNumsInt[3] = Integer.parseInt(typeNums[3]);
                     total += scoreInt[3] * typeNumsInt[3];
                     break;
-                case "应用":
+                case "应用题":
                     typeInt[4] = 1;
-                    scoreInt[4] = Integer.parseInt(scores[i]);
-                    typeNumsInt[4] = Integer.parseInt(typeNums[i]);
+                    scoreInt[4] = Integer.parseInt(scores[4]);
+                    typeNumsInt[4] = Integer.parseInt(typeNums[4]);
                     total += scoreInt[4] * typeNumsInt[4];
                     break;
                 default:
@@ -348,8 +359,8 @@ public class PaperController {
         String pageNum = request.getParameter("pageNum");
         String orderByColumn = request.getParameter("orderByColumn");
         String isAsc = request.getParameter("isAsc");
-        HttpSession session = request.getSession();
-        Integer paperId = (Integer) session.getAttribute("paperId");
+        // todo 前端添加入参
+        String paperId = RedisPoolUtil.get("paperId");
         QueryWrapper<Question> queryWrapper = new QueryWrapper<>();
         IPage<Question> page = null;
         if (pageSize != null && pageNum != null) {
@@ -415,15 +426,15 @@ public class PaperController {
 
     @PostMapping(value = "/question/add")
     @ResponseBody
-    public Result questionAdd(String ids, HttpSession session) {
+    public Result questionAdd(String ids) {
+        // todo
         List<Integer> idList = CommonUtil.strToList(ids);
         List<PaperQuestion> paperQuestions = new ArrayList<>();
-        Integer paperId = (Integer) session.getAttribute("paperId");
         PaperQuestion paperQuestion = null;
         for (Integer id :
                 idList) {
             paperQuestion = new PaperQuestion();
-            paperQuestion.setPaperId(paperId);
+            paperQuestion.setPaperId(Integer.parseInt(RedisPoolUtil.get("paperId")));
             paperQuestion.setQuestionId(id);
             paperQuestions.add(paperQuestion);
         }

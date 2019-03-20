@@ -4,10 +4,10 @@
 	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>远程教育考试平台_在线考试</title>
-	<link href="/student/css/main.css" rel="stylesheet" type="text/css" />
-	<link href="/student/css/iconfont.css" rel="stylesheet" type="text/css" />
-	<link href="/student/css/test.css" rel="stylesheet" type="text/css" />
+	<title>E+在线考试</title>
+	<link href="/main/css/main.css" rel="stylesheet" type="text/css" />
+	<link href="/main/css/iconfont.css" rel="stylesheet" type="text/css" />
+	<link href="/main/css/test.css" rel="stylesheet" type="text/css" />
 
 	<style>
 		.hasBeenAnswer {
@@ -148,11 +148,11 @@
 									</div>
 									<!-- 简答模板 -->
 									<div class="test_content_nr_main" th:if="${s.type eq 3}">
-										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}"></textarea>
+										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}" th:id="'qu_'+${sStat.index}+'_'+${rStat.index}"></textarea>
 									</div>
 									<!-- 应用模板 -->
 									<div class="test_content_nr_main" th:if="${s.type eq 4}" th:name="'paperId_'+${r.id}">
-										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;"></textarea>
+										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}" th:id="'qu_'+${sStat.index}+'_'+${rStat.index}"></textarea>
 									</div>
 
 								</li>
@@ -199,10 +199,10 @@
 	<div class="foot"></div>
 </div>
 
-<script src="/student/js/jquery-1.11.3.min.js"></script>
-<script src="/student/js/jquery.easy-pie-chart.js"></script>
+<script src="/main/js/jquery-1.11.3.min.js"></script>
+<script src="/main/js/jquery.easy-pie-chart.js"></script>
 <!--时间js-->
-<script src="/student/time/jquery.countdown.js"></script>
+<script src="/main/time/jquery.countdown.js"></script>
 <script>
     window.jQuery(function($) {
         "use strict";
@@ -229,8 +229,21 @@
             if(!cardLi.hasClass('hasBeenAnswer')){
                 cardLi.addClass('hasBeenAnswer');
             }
-
         });
+
+        $('div.test_content_nr_main textarea').click(function () {
+            var examId = $(this).closest('textarea').attr('id'); // 得到题目ID
+            var cardLi = $('a[href=#' + examId + ']'); // 根据题目ID找到对应答题卡
+            // 设置已答题
+			var answer = $('#'+examId+'').val();
+			if (answer != ""){
+                if(!cardLi.hasClass('hasBeenAnswer')){
+                    cardLi.addClass('hasBeenAnswer');
+                }
+			}
+        })
+
+
     });
 
     function paperSubmit() {

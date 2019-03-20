@@ -16,23 +16,28 @@
 		<div class="form-group">
 			<label class="col-sm-3 control-label ">题型：</label>
 			<div class="col-sm-8">
-				<input type="checkbox" id="single" value="单选题" name="type" />单选题&nbsp;&nbsp;
-				<input type="checkbox" id="many" value="多选题" name="type"/>多选题&nbsp;&nbsp;
-				<input type="checkbox" id="judge" value="判断" name="type"/>判断&nbsp;&nbsp;
-				<input type="checkbox" id="short" value="简答" name="type"/>简答&nbsp;&nbsp;
-				<input type="checkbox" id="application" value="应用" name="type"/>应用
+				<input type="checkbox" id="single" value="单选题" name="type"
+					   th:attr ="checked=${paper.type.contains('单选题')?true:false}"/>单选题&nbsp;&nbsp;
+				<input type="checkbox" id="many" value="多选题" name="type"
+					   th:attr ="checked=${paper.type.contains('多选题')?true:false}"/>多选题&nbsp;&nbsp;
+				<input type="checkbox" id="judge" value="判断题" name="type"
+					   th:attr ="checked=${paper.type.contains('判断题')?true:false}"/>判断题&nbsp;&nbsp;
+				<input type="checkbox" id="short" value="简答题" name="type"
+					   th:attr ="checked=${paper.type.contains('简答题')?true:false}"/>简答题&nbsp;&nbsp;
+				<input type="checkbox" id="application" value="应用题" name="type"
+					   th:attr ="checked=${paper.type.contains('应用题')?true:false}"/>应用题
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-sm-3 control-label ">题型分值：</label>
 			<div class="col-sm-8">
-				<input class="form-control" type="text"  name="scores" placeholder="对应上面题型逗号隔开(例如2,8,10)"/>
+				<input class="form-control" type="text"  name="scores" placeholder="对应上面题型逗号隔开(例如2,8,10)" th:value="${paper.score}"/>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-sm-3 control-label ">数量：</label>
 			<div class="col-sm-8">
-				<input class="form-control" type="text"  name="typeNums" placeholder="对应上面题型逗号隔开(例如2,3,4)" />
+				<input class="form-control" type="text"  name="typeNums" placeholder="对应上面题型逗号隔开(例如2,3,4)" th:value="${paper.typeNums}"/>
 			</div>
 		</div>
 		<div class="form-group">
@@ -45,15 +50,6 @@
 			<label class="col-sm-3 control-label ">结束时间：</label>
 			<div class="col-sm-8">
 				<input type="text" class="layui-input" id="end" placeholder="结束时间" name="end" th:value="${paper.endTime}">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-3 control-label">生成方式：</label>
-			<div class="col-sm-8">
-				<select id="random" class="form-control m-b">
-					<option value="0" selected="selected">随机</option>
-					<option value="1">固定</option>
-				</select>
 			</div>
 		</div>
 		<div class="form-group">

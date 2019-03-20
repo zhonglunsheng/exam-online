@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title></title>
-    <link rel="stylesheet" href="layui/css/layui.css" media="all">
-    <script src="layui/layui.js"></script>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
+    <script th:src="@{/main/layui/layui.js}"></script>
 </head>
 <body>
 <div class="layui-container" style="padding-top: 20px;">
@@ -23,7 +23,7 @@
     </div>
     <div class="layui-row">
         <div class="layui-col-xs12" style="padding-top: 5px;">
-            <h3><i class="layui-icon layui-icon-flag" style="font-size: 20px; color: black;"></i>近期考试成绩</h3>
+            <h3><i class="layui-icon layui-icon-fire" style="font-size: 20px; color: black;"></i>近期考试</h3>
             <table class="layui-table" lay-skin="nob">
                 <colgroup>
                     <col width="150">

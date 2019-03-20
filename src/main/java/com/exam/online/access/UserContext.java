@@ -9,13 +9,13 @@ import com.exam.online.entity.User;
  */
 public class UserContext {
 
-	private static ThreadLocal<User> userHolder = new ThreadLocal<User>();
+	private static ThreadLocal<Object> userHolder = new ThreadLocal<Object>();
 
-	public static void setUser(User user) {
+	public static void setUser(Object user) {
 		userHolder.set(user);
 	}
 
-	public static User getUser() {
+	public static Object getUser() {
 		return userHolder.get();
 	}
 

@@ -61,11 +61,6 @@ public class Paper extends Model<Paper> {
     private Integer state;
 
     /**
-     * 题目是否随机
-     */
-    private Boolean random;
-
-    /**
      * 试卷包括的题型 采用默认排列顺序 单项、判断、填空、简答、应用
      */
     private String type;

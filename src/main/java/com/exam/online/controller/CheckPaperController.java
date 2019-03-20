@@ -94,7 +94,7 @@ public class CheckPaperController {
         String[] type = paper.getType().split(",");
         String[] num = paper.getTypeNums().split(",");
         String[] score = paper.getScore().split(",");
-        String[] typeName = new String[]{"单选题", "多选题", "判断", "简答", "应用"};
+        String[] typeName = new String[]{"单选题", "多选题", "判断题", "简答题", "应用题"};
         List<QuestionVo> questionVos;
         // 获取该学生考试的题库记录
         List<Record> recordList = recordService.list(new QueryWrapper<Record>()
@@ -138,11 +138,11 @@ public class CheckPaperController {
                         questions) {
                     Record record = recordService.getOne(new QueryWrapper<Record>().eq("question_id", n.getId()).eq("paper_id",paperId));
                     vo.setTitle(n.getTitle());
-                    vo.setOptionA(n.getOptionA().replace("&nbsp;", ""));
-                    vo.setOptionB(n.getOptionB().replace("&nbsp;", ""));
-                    vo.setOptionC(n.getOptionC().replace("&nbsp;", ""));
-                    vo.setOptionD(n.getOptionD().replace("&nbsp;", ""));
-                    vo.setOptionE(n.getOptionE().replace("&nbsp;", ""));
+                    vo.setOptionA(vo.getOptionA() != null ?vo.getOptionA().replace("&nbsp;", ""):vo.getOptionA());
+                    vo.setOptionB(vo.getOptionB() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionB());
+                    vo.setOptionC(vo.getOptionC() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionC());
+                    vo.setOptionD(vo.getOptionD() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionD());
+                    vo.setOptionE(vo.getOptionE() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionE());
                     vo.setStudentAnswer(record.getStudentAnswer());
                     vo.setAnswer(n.getAnswer());
                     vo.setTargetScore(Integer.parseInt(score[i]));
