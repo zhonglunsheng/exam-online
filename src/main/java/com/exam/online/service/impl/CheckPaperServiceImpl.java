@@ -101,9 +101,9 @@ public class CheckPaperServiceImpl extends ServiceImpl<PaperQuestionMapper, Pape
                     vo.setTitle(n.getTitle());
                     vo.setOptionA(vo.getOptionA() != null ?vo.getOptionA().replace("&nbsp;", ""):vo.getOptionA());
                     vo.setOptionB(vo.getOptionB() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionB());
-                    vo.setOptionC(vo.getOptionC() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionC());
-                    vo.setOptionD(vo.getOptionD() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionD());
-                    vo.setOptionE(vo.getOptionE() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionE());
+                    vo.setOptionC(vo.getOptionC() != null ?vo.getOptionC().replace("&nbsp;", ""):vo.getOptionC());
+                    vo.setOptionD(vo.getOptionD() != null ?vo.getOptionD().replace("&nbsp;", ""):vo.getOptionD());
+                    vo.setOptionE(vo.getOptionE() != null ?vo.getOptionE().replace("&nbsp;", ""):vo.getOptionE());
 
                     vo.setStudentAnswer(record.getStudentAnswer());
                     vo.setAnswer(n.getAnswer());
