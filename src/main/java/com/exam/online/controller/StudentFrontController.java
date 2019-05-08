@@ -18,8 +18,12 @@ import com.exam.online.vo.exam.StudentPaperVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -179,9 +184,9 @@ public class StudentFrontController {
                     BeanUtils.copyProperties(q, qVo);
                     qVo.setOptionA(qVo.getOptionA() != null ?qVo.getOptionA().replace("&nbsp;", ""):qVo.getOptionA());
                     qVo.setOptionB(qVo.getOptionB() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionB());
-                    qVo.setOptionC(qVo.getOptionC() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionC());
-                    qVo.setOptionD(qVo.getOptionD() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionD());
-                    qVo.setOptionE(qVo.getOptionE() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionE());
+                    qVo.setOptionC(qVo.getOptionC() != null ?qVo.getOptionC().replace("&nbsp;", ""):qVo.getOptionC());
+                    qVo.setOptionD(qVo.getOptionD() != null ?qVo.getOptionD().replace("&nbsp;", ""):qVo.getOptionD());
+                    qVo.setOptionE(qVo.getOptionE() != null ?qVo.getOptionE().replace("&nbsp;", ""):qVo.getOptionE());
                     if (!questionVos.contains(qVo)) {
                         questionVos.add(qVo);
                     }
@@ -326,7 +331,7 @@ public class StudentFrontController {
     }
 
 
-    /*@RequestMapping("/question/add")
+    @RequestMapping("/question/add")
     public void main(String[] args) throws JSONException, FileNotFoundException {
         String jsonStr = "";
 
@@ -400,6 +405,6 @@ public class StudentFrontController {
         }
         System.out.println(object.toString());
 
-    }*/
+    }
 
 }
