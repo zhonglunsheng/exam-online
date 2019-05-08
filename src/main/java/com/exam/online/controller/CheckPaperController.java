@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.exam.online.common.Consts;
-import com.exam.online.common.PageResult;
+import com.exam.online.bo.PageResult;
 import com.exam.online.common.Result;
 import com.exam.online.entity.*;
 import com.exam.online.service.*;
@@ -37,7 +37,7 @@ import java.util.Objects;
  */
 @Controller
 @RequestMapping("/teacher/check")
-public class CheckPaperController {
+public class CheckPaperController extends BaseController{
 
     private final String viewName = "backend/teacher/check/";
 
@@ -58,6 +58,9 @@ public class CheckPaperController {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private CheckPaperService checkPaperService;
 
     @GetMapping("/")
     public String main(Model model) {
@@ -80,83 +83,10 @@ public class CheckPaperController {
      */
     @GetMapping("/detail")
     public String detail(Model model, Integer studentId, Integer paperId) {
-        StudentPaperVo studentPaperVo = new StudentPaperVo();
         if (studentId == null || paperId == null){
-            return "redirct:/err500";
-        }else{
-            studentPaperVo.setStudentId(studentId);
-            studentPaperVo.setPaperId(paperId);
+            return redirect("/500");
         }
-        List<QuestionResult> questionResultList = new ArrayList<>();
-
-        // 补充逻辑 1、先获取试卷配置表里面的信息   2、按照顺序分别取出单项、多项、判断、简答、应用
-        Paper paper = paperService.getById(paperId);
-        String[] type = paper.getType().split(",");
-        String[] num = paper.getTypeNums().split(",");
-        String[] score = paper.getScore().split(",");
-        String[] typeName = new String[]{"单选题", "多选题", "判断题", "简答题", "应用题"};
-        List<QuestionVo> questionVos;
-        // 获取该学生考试的题库记录
-        List<Record> recordList = recordService.list(new QueryWrapper<Record>()
-                .eq("student_id", studentId)
-                .eq("paper_id", paperId));
-        List<Integer> ids = new ArrayList<>();
-        // 没有考试提交记录 该考生缺考默认0分
-        for (Record d :
-                recordList) {
-            ids.add(d.getQuestionId());
-        }
-        if (ids.size() == 0) {
-            studentPaperVo.setCode(1);
-            studentPaperVo.setMsg("该学生本次考试缺考，默认计算0分");
-            Score score1 = new Score();
-            score1.setPaperId(paperId);
-            score1.setStudentId(studentId);
-            score1.setCreateTime(DateTimeUtil.dateToStr(new Date()));
-            score1.setStudentScore(0);
-            score1.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
-            scoreService.save(score1);
-            model.addAttribute("result", studentPaperVo);
-            return viewName + "detail";
-        }
-        QuestionResult questionResult;
-        for (int i = 0; i < type.length; i++) {
-            questionResult = new QuestionResult();
-            if ("1".equals(type[i])) {
-                questionResult.setName(typeName[i]);
-                questionResult.setScore(Integer.parseInt(score[i]) * Integer.parseInt(num[i]));
-                questionResult.setTotal(Integer.parseInt(num[i]));
-                questionResult.setType(i);
-
-                questionVos = new ArrayList<>();
-                QuestionVo vo = new QuestionVo();
-
-                List<Question> questions = questionService.list(new QueryWrapper<Question>()
-                        .eq("type", typeName[i]).in("id", ids));
-
-                for (Question n :
-                        questions) {
-                    Record record = recordService.getOne(new QueryWrapper<Record>().eq("question_id", n.getId()).eq("paper_id",paperId));
-                    vo.setTitle(n.getTitle());
-                    vo.setOptionA(vo.getOptionA() != null ?vo.getOptionA().replace("&nbsp;", ""):vo.getOptionA());
-                    vo.setOptionB(vo.getOptionB() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionB());
-                    vo.setOptionC(vo.getOptionC() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionC());
-                    vo.setOptionD(vo.getOptionD() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionD());
-                    vo.setOptionE(vo.getOptionE() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionE());
-                    vo.setStudentAnswer(record.getStudentAnswer());
-                    vo.setAnswer(n.getAnswer());
-                    vo.setTargetScore(Integer.parseInt(score[i]));
-                    vo.setSingleScore(n.getAnswer().equals(record.getStudentAnswer()) ? Integer.parseInt(score[i]) : 0);
-                    questionVos.add(vo);
-                }
-                questionResult.setQuestionVos(questionVos);
-                questionResultList.add(questionResult);
-            }
-        }
-        studentPaperVo.setCode(0);
-        studentPaperVo.setPaperName(paper.getName());
-        studentPaperVo.setQuestionResults(questionResultList);
-        model.addAttribute("result", studentPaperVo);
+        model.addAttribute("result", checkPaperService.getPaperDetail(studentId, paperId));
         return viewName + "detail";
     }
 
@@ -170,17 +100,9 @@ public class CheckPaperController {
     @PostMapping("/list")
     @ResponseBody
     public PageResult paperList(HttpServletRequest request, CheckVo checkReq) {
-        String pageSize = request.getParameter("pageSize");
-        String pageNum = request.getParameter("pageNum");
-        String orderByColumn = request.getParameter("orderByColumn");
-        String isAsc = request.getParameter("isAsc");
         QueryWrapper queryWrapper = new QueryWrapper<Student>();
-        Boolean flag = false;
-        IPage<Student> page = new Page<>();
-        List<PaperVo> rows = new ArrayList<>();
-        if (pageSize != null && pageNum != null) {
-            page = new Page<>(Integer.parseInt(pageNum), Integer.parseInt(pageSize));
-        }
+        IPage<Student> page = startPage();
+
         // 根据条件查询
         if (checkReq != null) {
             if (checkReq.getClassId() != null) {
@@ -222,29 +144,26 @@ public class CheckPaperController {
             checkVos.add(checkVo);
         }
 
-        List<Paper> papers = paperService.list();
-
         return PageResult.success(Long.valueOf(total), checkVos);
     }
 
     /**
      * 提交阅卷后分数
      * @param score
-     * @param studentId
-     * @param paperId
      * @return
      */
     @RequestMapping("/getScore")
     @ResponseBody
-    public Result getScore(Integer score, Integer studentId, Integer paperId){
-        Score param = new Score();
-        param.setCreateTime(DateTimeUtil.dateToStr(new Date()));
-        param.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
-        param.setStudentScore(score);
-        param.setStudentId(studentId);
-        param.setPaperId(paperId);
+    public Result getScore(Score score){
+        Score commitScore = new Score();
+        commitScore.setCreateTime(DateTimeUtil.dateToStr(new Date()));
+        commitScore.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
+        commitScore.setStudentScore(score.getStudentScore());
+        commitScore.setStudentId(score.getStudentId());
+        commitScore.setPaperId(score.getPaperId());
+        commitScore.setFullScore(score.getFullScore());
 
-        boolean result = scoreService.save(param);
+        boolean result = scoreService.save(commitScore);
         if (result){
             return Result.success(Consts.Common.SUCCESS);
         }else{

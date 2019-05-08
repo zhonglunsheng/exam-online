@@ -16,5 +16,7 @@ public class StudentPaperVo {
     private String paperName;
     private Integer paperId;
     private Integer studentId;
+    private Integer fullScore;
+    private String timeDifferent;
     List<QuestionResult> questionResults;
 }

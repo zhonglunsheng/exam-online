@@ -154,7 +154,7 @@
     <div class="foot"></div>
 </div>
 <div th:include="include::footer"></div>
-<script>
+<script th:inline="javascript">
     function backList() {
         var data = {code:'0',msg:'正在返回'}
         $.operate.successCallback(data);
@@ -185,9 +185,11 @@
                 data: {
                     "studentId": $("input[name='studentId']").val(),
                     "paperId": $("input[name='paperId']").val(),
-                    "score": score
+                    "score": score,
+                    "fullScore": [[${result.fullScore}]],
+                    "paperName": [[${result.paperName}]]
                 },
-                success: function (data) {
+                success: function(data) {
                     $.operate.successCallback(data);
                 }
             });
@@ -196,5 +198,4 @@
     }
 </script>
 </body>
-
 </html>

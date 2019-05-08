@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.exam.online.common.Consts;
-import com.exam.online.common.PageResult;
+import com.exam.online.bo.PageResult;
 import com.exam.online.common.Result;
 import com.exam.online.entity.Student;
 import com.exam.online.entity.StudentClass;

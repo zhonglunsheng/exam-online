@@ -1,0 +1,4 @@
+1、使用idea编译器导入maven项目
+2、导入SQL文件到MySQL数据库
+3、启动Redis服务
+4、修改配置文件application.properties

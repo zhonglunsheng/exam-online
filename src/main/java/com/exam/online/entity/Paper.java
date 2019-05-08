@@ -58,7 +58,7 @@ public class Paper extends Model<Paper> {
     /**
      * 状态： 0：发布 1：结束
      */
-    private Integer state;
+    private String statusCd;
 
     /**
      * 试卷包括的题型 采用默认排列顺序 单项、判断、填空、简答、应用
@@ -86,4 +86,7 @@ public class Paper extends Model<Paper> {
         return this.id;
     }
 
+    public boolean statusSuccessFlag(){
+        return "0".equals(this.statusCd);
+    }
 }

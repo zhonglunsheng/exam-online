@@ -26,10 +26,12 @@
 			<div class="test" th:if="${result.code eq 0}">
 				<form action="/student/paper/submit" method="post" id="form-submit">
 					<input type="hidden" th:value="${result.studentId}" name="studentId">
+					<input type="hidden" th:value="${result.fullScore}" name="fullScore">
+					<input type="hidden" th:value="${result.paperName}" name="paperName">
 					<input type="hidden" th:value="${result.paperId}" name="paperId">
 					<div class="test_title">
 						<p class="test_time">
-							<b class="alt-1">01:40</b>
+							<b class="alt-1">[[${result.timeDifferent}]]</b>
 						</p>
 						<font><input type="button" name="test_jiaojuan" value="交卷" onclick="paperSubmit()"></font>
 					</div>
@@ -171,7 +173,7 @@
 							答题卡
 						</h1>
 						<p class="test_time">
-							<b class="alt-1">01:40</b>
+							<b class="alt-1">[[${result.timeDifferent}]]</b>
 						</p>
 					</div>
 

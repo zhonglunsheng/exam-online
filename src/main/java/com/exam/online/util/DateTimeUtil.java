@@ -49,12 +49,22 @@ public class DateTimeUtil {
         return dateTime.toString(STANDARD_FORMAT);
     }
 
+    public static String getTimeDifference(String from, String to){
+        Date fromTime = strToDate(from);
+        Date toTime = strToDate(to);
+        Long timeTotal = toTime.getTime() - fromTime.getTime();
+        int hour = (int) (timeTotal/(1000 * 60 * 60));
+        int minute = (int) (timeTotal - hour * 60 * 60 * 1000) / (1000 * 60);
+        return String.format("%d:%d", hour,minute);
+    }
 
 
 
     public static void main(String[] args) {
-        System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
-        System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));
+//        System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
+//        System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));
+
+        System.out.println(getTimeDifference("2019-10-01 12:00:00", "2019-10-01 14:00:00"));
 
     }
 

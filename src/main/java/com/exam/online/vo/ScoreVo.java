@@ -15,5 +15,5 @@ public class ScoreVo extends StudentVo {
     /**
      * 满分
      */
-    private Integer paperScore;
+    private Integer fullScore;
 }

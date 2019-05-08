@@ -4,9 +4,9 @@ package com.exam.online.controller.backend;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.exam.online.common.ChartsResult;
-import com.exam.online.common.PageResult;
-import com.exam.online.common.Series;
+import com.exam.online.bo.ChartsResult;
+import com.exam.online.bo.PageResult;
+import com.exam.online.bo.Series;
 import com.exam.online.entity.Paper;
 import com.exam.online.entity.Score;
 import com.exam.online.entity.Student;
@@ -16,7 +16,6 @@ import com.exam.online.service.ScoreService;
 import com.exam.online.service.StudentClassService;
 import com.exam.online.service.StudentService;
 import com.exam.online.vo.ScoreVo;
-import com.exam.online.vo.StudentVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

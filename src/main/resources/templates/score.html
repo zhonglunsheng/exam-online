@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
-	<title></title>
+	<title>E+在线考试系统</title>
 	<link rel="stylesheet" th:href="@{/layui/css/layui.css}"  media="all">
 	<script th:src="@{/layui/layui.js}"></script>
 </head>
@@ -41,7 +41,7 @@
 				<tbody>
 				<tr th:each="score : ${scores}">
 					<td>[[${score.paperName}]]</td>
-					<td><font style="color: red;">[[${score.paperScore}]]</font></td>
+					<td><font style="color: red;">[[${score.fullScore}]]</font></td>
 					<td><font style="color: red;">[[${score.score}]]</font></td>
                     <td>[[${score.createTime}]]</td>
 				</tr>

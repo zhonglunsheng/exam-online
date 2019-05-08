@@ -1,6 +1,5 @@
 package com.exam.online.controller;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.exam.online.access.UserContext;
@@ -19,12 +18,8 @@ import com.exam.online.vo.exam.StudentPaperVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -69,7 +63,7 @@ public class StudentFrontController {
      */
     @RequestMapping("/index")
     public String index() {
-        return "index";
+        return "loginS2";
     }
 
     /**
@@ -197,24 +191,29 @@ public class StudentFrontController {
             }
         }
         paperVo.setCode(0);
+        paperVo.setTimeDifferent(DateTimeUtil.getTimeDifference(paper.getStartTime(), paper.getEndTime()));
         paperVo.setPaperName(paper.getName());
         paperVo.setQuestionResults(questionResults);
+        paperVo.setFullScore(getFullScore(num,score));
         model.addAttribute("result", paperVo);
         return "detail";
     }
 
+    private Integer getFullScore(String[] paperTypeNum, String[] paperTypeScore){
+        Integer total = 0;
+        for (int i = 0; i < paperTypeNum.length; i++) {
+            total += Integer.parseInt(paperTypeNum[i]) * Integer.parseInt(paperTypeScore[i]);
+        }
+        return total;
+    }
+
     @RequestMapping("/student/paper/submit")
-    public String paperSubmit(HttpServletRequest request, Integer studentId, Integer paperId) {
+    public String paperSubmit(HttpServletRequest request, Integer studentId, Integer paperId, String paperName, Integer fullScore) {
         Map<String, String[]> param = request.getParameterMap();
+        Score commitScore = new Score();
         if (param.size() == Consts.Submit.BLANK_SUBMIT) {
             // 交白卷
-            Score score = new Score();
-            score.setStudentId(studentId);
-            score.setPaperId(paperId);
-            score.setStudentScore(0);
-            score.setCreateTime(DateTimeUtil.dateToStr(new Date()));
-            score.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
-            scoreService.save(score);
+            commitScore.setStudentScore(0);
         } else {
             // 判断试卷是否全是主观题
             Paper paper = paperService.getById(paperId);
@@ -256,19 +255,20 @@ public class StudentFrontController {
                             }
                             score +=  Integer.parseInt(resultScore[index]);
                         }
+                        commitScore.setStudentScore(score);
                     }
                     recordService.save(record);
                 }
             }
 
             if (!reuslt){
-                Score scoreNew = new Score();
-                scoreNew.setStudentId(studentId);
-                scoreNew.setPaperId(paperId);
-                scoreNew.setStudentScore(score);
-                scoreNew.setCreateTime(DateTimeUtil.dateToStr(new Date()));
-                scoreNew.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
-                scoreService.save(scoreNew);
+                commitScore.setStudentId(studentId);
+                commitScore.setPaperId(paperId);
+                commitScore.setFullScore(fullScore);
+                commitScore.setPaperName(paperName);
+                commitScore.setCreateTime(DateTimeUtil.dateToStr(new Date()));
+                commitScore.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
+                scoreService.save(commitScore);
             }
         }
 
@@ -284,18 +284,6 @@ public class StudentFrontController {
                 scoreList) {
             ScoreVo scoreVo = new ScoreVo();
             BeanUtils.copyProperties(e, scoreVo);
-            Paper paper = paperService.getById(e.getPaperId());
-            String[] score = paper.getScore().split(",");
-            String[] num = paper.getTypeNums().split(",");
-            Integer total = 0;
-            Integer size = 5;
-            for (int i = 0; i < size; i++) {
-                if (!num[i].equals(0)) {
-                    total += Integer.parseInt(num[i]) * Integer.parseInt(score[i]);
-                }
-            }
-            scoreVo.setPaperName(paper.getName());
-            scoreVo.setPaperScore(total);
             scoreVo.setScore(e.getStudentScore());
             scoreVos.add(scoreVo);
         }
@@ -338,12 +326,12 @@ public class StudentFrontController {
     }
 
 
-    @RequestMapping("/question/add")
+    /*@RequestMapping("/question/add")
     public void main(String[] args) throws JSONException, FileNotFoundException {
         String jsonStr = "";
 
         File file = ResourceUtils.getFile("classpath:json.txt");
-        // 绝对路径或相对路径都可以，写入文件时演示相对路径,读取以上路径的input.txt文件
+        //绝对路径或相对路径都可以，写入文件时演示相对路径,读取以上路径的input.txt文件
         //防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw;
         //不关闭文件会导致资源的泄露，读写文件都同理
         //Java7的try-with-resources可以优雅关闭文件，异常时自动关闭文件；详细解读https://stackoverflow.com/a/12665271
@@ -412,6 +400,6 @@ public class StudentFrontController {
         }
         System.out.println(object.toString());
 
-    }
+    }*/
 
 }

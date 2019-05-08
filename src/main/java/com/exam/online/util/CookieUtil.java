@@ -29,13 +29,6 @@ public class CookieUtil {
         return null;
     }
 
-    //X:domain=".happymmall.com"
-    //a:A.happymmall.com            cookie:domain=A.happymmall.com;path="/"
-    //b:B.happymmall.com            cookie:domain=B.happymmall.com;path="/"
-    //c:A.happymmall.com/test/cc    cookie:domain=A.happymmall.com;path="/test/cc"
-    //d:A.happymmall.com/test/dd    cookie:domain=A.happymmall.com;path="/test/dd"
-    //e:A.happymmall.com/test       cookie:domain=A.happymmall.com;path="/test"
-
     public static void writeLoginToken(HttpServletResponse response,String tokenName, String token){
         Cookie ck = new Cookie(tokenName,token);
         ck.setDomain(COOKIE_DOMAIN);

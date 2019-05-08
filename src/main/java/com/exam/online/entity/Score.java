@@ -55,6 +55,10 @@ public class Score extends Model<Score> {
      */
     private String updateTime;
 
+    private String paperName;
+
+    private Integer fullScore;
+
 
     @Override
     protected Serializable pkVal() {

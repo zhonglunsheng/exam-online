@@ -41,25 +41,6 @@ public class MainController {
     @GetMapping("/admin/list")
     @ResponseBody
     public Result list(){
-        List<Integer> result = new ArrayList<>();
-        List<User> users = userService.list();
-        int count = 0;
-        if (users == null || users.size() == 0){
-            result.add(0);
-            result.add(0);
-        }else{
-            for (User user:
-                    users) {
-                if (user != null){
-                    count = user.getRole() == 0? count + 1:count;
-                }
-            }
-            result.add(count);
-            result.add(users.size() - count);
-        }
-        result.add(studentService.list().size());
-        result.add(paperService.list().size());
-        result.add(questionService.list().size());
-        return Result.success(result);
+        return Result.success(userService.getDataInfoCount());
     }
 }

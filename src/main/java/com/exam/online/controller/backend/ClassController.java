@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.exam.online.common.Consts;
-import com.exam.online.common.PageResult;
+import com.exam.online.bo.PageResult;
 import com.exam.online.common.Result;
 import com.exam.online.entity.Student;
 import com.exam.online.entity.StudentClass;
@@ -12,12 +12,12 @@ import com.exam.online.service.StudentClassService;
 import com.exam.online.service.StudentService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
+import com.exam.online.util.ParamCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -57,25 +57,17 @@ public class ClassController {
 
     /**
      * 获取班级列表
-     * @param request
      * @return
      */
     @PostMapping("/list")
     @ResponseBody
-    public PageResult classList(HttpServletRequest request, String className){
-        String pageSize = request.getParameter("pageSize");
-        String pageNum = request.getParameter("pageNum");
-        IPage<StudentClass> page = null;
-        if (pageSize != null && pageNum != null){
-            page = new Page<StudentClass>(Integer.parseInt(pageNum), Integer.parseInt(pageSize));
-        }
-        Integer total = 0;
+    public PageResult classList(){
+        Integer pageSize = ParamCheck.getParamNotNullForInteger("pageSize");
+        Integer pageNum = ParamCheck.getParamNotNullForInteger("pageNum");
+        IPage<StudentClass> page = new Page<>(pageNum, pageSize);
         List<StudentClass> studentClasses = studentClassService.list();
-        if (studentClasses != null){
-            total = studentClasses.size();
-        }
         page = studentClassService.page(page, null);
-        return PageResult.success(Long.valueOf(total), page.getRecords());
+        return PageResult.success(ParamCheck.getListNotNullSize(studentClasses), page.getRecords());
     }
 
     /**
@@ -95,7 +87,7 @@ public class ClassController {
         studentClass.setCreateTime(DateTimeUtil.dateToStr(new Date()));
         studentClass.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
         studentClassService.saveOrUpdate(studentClass);
-        return Result.success();
+        return Result.success(Consts.Common.SUCCESS);
     }
 
     /**

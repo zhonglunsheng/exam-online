@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.exam.online.access.UserContext;
 import com.exam.online.common.Consts;
+import com.exam.online.common.ResponseCode;
 import com.exam.online.common.Result;
 import com.exam.online.entity.User;
 import com.exam.online.service.UserService;
 import com.exam.online.util.CookieUtil;
 import com.exam.online.util.Md5Util;
+import com.exam.online.util.ParamCheck;
 import com.exam.online.util.RedisPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -45,7 +47,7 @@ public class UserController {
      */
     @GetMapping("/system/login")
     public String doLogin() {
-        return "login";
+        return "tlogin";
     }
 
     /**
@@ -61,11 +63,15 @@ public class UserController {
         //账号和密码是否存在
         String email = user.getEmail();
         String password = user.getPassword();
+        String role = ParamCheck.getParamNotNullForString("role");
 
         if (Strings.isBlank(email) || Strings.isBlank(password)) {
             return Result.error(Consts.Login.LOGIN_NULL);
         }
-        Result result = userService.login(email, Md5Util.md5Encodeutf8(password));
+        Result result = userService.login(email, Md5Util.md5Encodeutf8(password), role);
+        if (result.getCode() == ResponseCode.ERROR.getCode()){
+            return result;
+        }
         String token = UUID.randomUUID().toString();
         RedisPoolUtil.set(token, JSON.toJSONString(result.getData()));
         CookieUtil.writeLoginToken(response, Consts.Common.USER_TOKEN, token);
@@ -98,9 +104,6 @@ public class UserController {
         User user = (User)UserContext.getUser();
         if (user == null) {
             user = new User();
-        }
-        if (user.getAvatar() == null) {
-            user.setAvatar("/avatar/default.jpg");
         }
         model.addAttribute("user", user);
         return "backend/main";

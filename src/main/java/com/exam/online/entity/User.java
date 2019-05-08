@@ -60,11 +60,6 @@ public class User extends Model<User> {
     private String phone;
 
     /**
-     * 头像
-     */
-    private String avatar;
-
-    /**
      * 创建时间
      */
     private String createTime;
