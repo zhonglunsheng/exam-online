@@ -99,16 +99,16 @@ public class CheckPaperServiceImpl extends ServiceImpl<PaperQuestionMapper, Pape
                     Record record = recordMapper.selectOne(new QueryWrapper<Record>().eq("question_id", n.getId()).eq("paper_id",paperId));
 
                     vo.setTitle(n.getTitle());
-                    vo.setOptionA(vo.getOptionA() != null ?vo.getOptionA().replace("&nbsp;", ""):vo.getOptionA());
-                    vo.setOptionB(vo.getOptionB() != null ?vo.getOptionB().replace("&nbsp;", ""):vo.getOptionB());
-                    vo.setOptionC(vo.getOptionC() != null ?vo.getOptionC().replace("&nbsp;", ""):vo.getOptionC());
-                    vo.setOptionD(vo.getOptionD() != null ?vo.getOptionD().replace("&nbsp;", ""):vo.getOptionD());
-                    vo.setOptionE(vo.getOptionE() != null ?vo.getOptionE().replace("&nbsp;", ""):vo.getOptionE());
+                    vo.setOptionA(n.getOptionA() != null ?n.getOptionA().replace("&nbsp;", ""):n.getOptionA());
+                    vo.setOptionB(n.getOptionB() != null ?n.getOptionB().replace("&nbsp;", ""):n.getOptionB());
+                    vo.setOptionC(n.getOptionC() != null ?n.getOptionC().replace("&nbsp;", ""):n.getOptionC());
+                    vo.setOptionD(n.getOptionD() != null ?n.getOptionD().replace("&nbsp;", ""):n.getOptionD());
+                    vo.setOptionE(n.getOptionE() != null ?n.getOptionE().replace("&nbsp;", ""):n.getOptionE());
 
                     vo.setStudentAnswer(record.getStudentAnswer());
                     vo.setAnswer(n.getAnswer());
                     vo.setTargetScore(Integer.parseInt(paperTypeScore[i]));
-                    vo.setSingleScore(n.getAnswer().equals(record.getStudentAnswer()) ? Integer.parseInt(paperTypeScore[i]) : 0);
+                    vo.setSingleScore(n.getAnswer().equalsIgnoreCase(record.getStudentAnswer()) ? Integer.parseInt(paperTypeScore[i]) : 0);
                     questionVos.add(vo);
                 }
                 questionResult.setQuestionVos(questionVos);

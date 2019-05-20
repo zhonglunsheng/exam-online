@@ -9,12 +9,12 @@ public enum ResponseCode {
     /**
      * 成功
      */
-    SUCCESS(0, "SUCCESS"),
+    SUCCESS(0, "操作成功"),
 
     /**
      * 失败
      */
-    ERROR(1, "ERROR")
+    ERROR(1, "操作失败")
     ;
     /**
      * 响应状态码

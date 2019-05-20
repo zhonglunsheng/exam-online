@@ -21,7 +21,7 @@ function login(){
 			if(data.code == 0){
 				window.location.href = "/user/main";
 			}else{
-				alert(data.msg);
+				layer.msg('用户名或密码错误');
 			}
 		});
 }

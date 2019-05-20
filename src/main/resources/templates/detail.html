@@ -152,11 +152,10 @@
 									<div class="test_content_nr_main" th:if="${s.type eq 3}">
 										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}" th:id="'qu_'+${sStat.index}+'_'+${rStat.index}"></textarea>
 									</div>
-									<!-- 应用模板 -->
+									<!-- 填空题模板 -->
 									<div class="test_content_nr_main" th:if="${s.type eq 4}" th:name="'paperId_'+${r.id}">
-										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}" th:id="'qu_'+${sStat.index}+'_'+${rStat.index}"></textarea>
+										<textarea style="font-size:12pt; color:#0000ff; height:200px; width: 500px;" th:name="'paperId_'+${r.id}" th:id="'qu_'+${sStat.index}+'_'+${rStat.index}" placeholder="多个答案请逗号（，）隔开..."></textarea>
 									</div>
-
 								</li>
 							</ul>
 						</div>
@@ -221,8 +220,24 @@
 
     });
 
+	var UnloadConfirm = {};
+	UnloadConfirm.MSG_UNLOAD = "禁止刷新页面或离开考场，否则系统会自动交卷\n\n您确定吗？";
+	UnloadConfirm.set = function(a) {
+		window.onbeforeunload = function(b) {
+			b = b || window.event;
+			b.returnValue = a;
+			return a
+		}
+	};
+	UnloadConfirm.clear = function() {
+		fckDraft.delDraftById();
+		window.onbeforeunload = function() {
+		}
+	};
+	UnloadConfirm.set(UnloadConfirm.MSG_UNLOAD);
 
-    $(function() {
+
+	$(function() {
         $('li.option label').click(function() {
             debugger;
             var examId = $(this).closest('.test_content_nr_main').closest('li').attr('id'); // 得到题目ID

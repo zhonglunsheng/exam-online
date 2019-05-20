@@ -7,23 +7,17 @@ import com.exam.online.common.Consts;
 import com.exam.online.common.Result;
 import com.exam.online.entity.*;
 import com.exam.online.service.*;
-import com.exam.online.util.CookieUtil;
-import com.exam.online.util.DateTimeUtil;
-import com.exam.online.util.Md5Util;
-import com.exam.online.util.RedisPoolUtil;
+import com.exam.online.util.*;
 import com.exam.online.vo.ScoreVo;
 import com.exam.online.vo.exam.QuestionResult;
 import com.exam.online.vo.exam.QuestionVo;
 import com.exam.online.vo.exam.StudentPaperVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,6 +35,7 @@ import java.util.*;
  * @create 2019-02-27 18:57
  */
 @Controller
+@Slf4j
 public class StudentFrontController {
 
     @Autowired
@@ -61,14 +56,69 @@ public class StudentFrontController {
     @Autowired
     private ScoreService scoreService;
 
+    @Autowired
+    private StudentClassService studentClassService;
+
     /**
      * 学生登录首页
      *
      * @return
      */
     @RequestMapping("/index")
-    public String index() {
+    public String index(Model model) {
+        List<StudentClass> classList = studentClassService.list();
+        model.addAttribute("classList", classList);
         return "loginS2";
+    }
+
+    /**
+     * 检查学号是否已存在
+     *
+     * @param num
+     * @return
+     */
+    @RequestMapping("/checkNum")
+    @ResponseBody
+    public Result checkNum(String num) {
+        Integer result = studentService.count(new QueryWrapper<Student>().eq("num", num));
+        if (result > 0) {
+            return Result.error("学号已存在");
+        } else {
+            return Result.success();
+        }
+    }
+
+    /**
+     * 学生登录
+     *
+     * @return
+     */
+    @RequestMapping("/register")
+    @ResponseBody
+    public Result register() {
+        try {
+            String num = ParamCheck.getParamNotNullForString("num");
+            Integer result = studentService.count(new QueryWrapper<Student>().eq("num", num));
+            if (result > 0) {
+                return Result.error("学号已存在");
+            }
+            String password = ParamCheck.getParamNotNullForString("password");
+            String name = ParamCheck.getParamNotNullForString("name");
+            String classId = ParamCheck.getParamNotNullForString("classId");
+            Student student = new Student();
+            student.setNum(num);
+            student.setPassword(Md5Util.md5Encodeutf8(password));
+            student.setName(name);
+            student.setClassId(Integer.parseInt(classId));
+            student.setCreateTime(DateTimeUtil.dateToStr(new Date()));
+            student.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
+            studentService.save(student);
+
+            return Result.success("注册成功");
+        } catch (Exception e) {
+            log.error("注册异常 {}", e);
+            return Result.error("注册失败");
+        }
     }
 
     /**
@@ -89,8 +139,8 @@ public class StudentFrontController {
 
         if (studentList != null && studentList.size() != 0) {
             String token = UUID.randomUUID().toString();
-            RedisPoolUtil.set(token, JSON.toJSONString(studentList.get(0)));
-            CookieUtil.writeLoginToken(response, Consts.Common.STUDENT_TOKEN, token);
+            RedisPoolUtil.setEx(token, JSON.toJSONString(studentList.get(0)), 60*30);
+            CookieUtil.writeLoginToken(response, Consts.Common.LOGIN_TOKEN, token);
             return Result.success();
         } else {
             return Result.error("用户名或密码错误");
@@ -104,7 +154,7 @@ public class StudentFrontController {
      */
     @RequestMapping("/student/main")
     public String main(Model model, HttpServletRequest request) {
-        Student student = (Student)UserContext.getUser();
+        Student student = (Student) UserContext.getUser();
         List<Score> scoreList = scoreService.list(new QueryWrapper<Score>().eq("student_id", student.getStudentId()));
         List<Record> recordList = recordService.list(new QueryWrapper<Record>().eq("student_id", student.getStudentId()));
         List<Paper> list = null;
@@ -119,13 +169,26 @@ public class StudentFrontController {
             ids.add(e.getPaperId());
         }
 
-        list = paperService.list(new QueryWrapper<Paper>().gt("start_time", new Date())
+        list = paperService.list(new QueryWrapper<Paper>().gt("end_time", new Date())
                 .notIn("id", ids));
 
         model.addAttribute("examList", list);
         model.addAttribute("student", student);
         return "main";
     }
+
+    @RequestMapping("/student/detail/check/{id}")
+    @ResponseBody
+    public Result paperDetail(@PathVariable("id") Integer paperId) {
+        Paper paper = paperService.getById(paperId);
+        Boolean inExam = DateTimeUtil.whoIsBig(DateTimeUtil.dateToStr(new Date()), paper.getStartTime());
+        if (inExam){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+
 
     @RequestMapping("/student/detail/{id}")
     public String paperDetail(@PathVariable("id") Integer paperId, Model model, HttpSession session) {
@@ -137,7 +200,7 @@ public class StudentFrontController {
         String[] type = paper.getType().split(",");
         String[] num = paper.getTypeNums().split(",");
         String[] score = paper.getScore().split(",");
-        String[] typeName = new String[]{"单选题", "多选题", "判断题", "简答题", "应用题"};
+        String[] typeName = Consts.Question.TYPE_NAME;
 
         // 获取试卷题库
         List<PaperQuestion> paperQuestions = paperQuestionService.list(new QueryWrapper<PaperQuestion>().eq("paper_id", paperId));
@@ -146,7 +209,7 @@ public class StudentFrontController {
             total += Integer.parseInt(num[i]);
         }
         if (paperQuestions.size() == 0 || paperQuestions.size() < total) {
-            model.addAttribute("student", (Student)UserContext.getUser());
+            model.addAttribute("student", (Student) UserContext.getUser());
             return "error/err500";
         }
         List<Integer> ids = new ArrayList<>();
@@ -157,7 +220,7 @@ public class StudentFrontController {
 
         Integer questionNum = null;
         Random random = new Random();
-        Student student = (Student)UserContext.getUser();
+        Student student = (Student) UserContext.getUser();
         StudentPaperVo paperVo = new StudentPaperVo();
         paperVo.setPaperId(paperId);
         paperVo.setStudentId(student.getStudentId());
@@ -182,11 +245,11 @@ public class StudentFrontController {
                     QuestionVo qVo = new QuestionVo();
                     qVo.setTargetScore(Integer.parseInt(score[i]));
                     BeanUtils.copyProperties(q, qVo);
-                    qVo.setOptionA(qVo.getOptionA() != null ?qVo.getOptionA().replace("&nbsp;", ""):qVo.getOptionA());
-                    qVo.setOptionB(qVo.getOptionB() != null ?qVo.getOptionB().replace("&nbsp;", ""):qVo.getOptionB());
-                    qVo.setOptionC(qVo.getOptionC() != null ?qVo.getOptionC().replace("&nbsp;", ""):qVo.getOptionC());
-                    qVo.setOptionD(qVo.getOptionD() != null ?qVo.getOptionD().replace("&nbsp;", ""):qVo.getOptionD());
-                    qVo.setOptionE(qVo.getOptionE() != null ?qVo.getOptionE().replace("&nbsp;", ""):qVo.getOptionE());
+                    qVo.setOptionA(qVo.getOptionA() != null ? qVo.getOptionA().replace("&nbsp;", "") : qVo.getOptionA());
+                    qVo.setOptionB(qVo.getOptionB() != null ? qVo.getOptionB().replace("&nbsp;", "") : qVo.getOptionB());
+                    qVo.setOptionC(qVo.getOptionC() != null ? qVo.getOptionC().replace("&nbsp;", "") : qVo.getOptionC());
+                    qVo.setOptionD(qVo.getOptionD() != null ? qVo.getOptionD().replace("&nbsp;", "") : qVo.getOptionD());
+                    qVo.setOptionE(qVo.getOptionE() != null ? qVo.getOptionE().replace("&nbsp;", "") : qVo.getOptionE());
                     if (!questionVos.contains(qVo)) {
                         questionVos.add(qVo);
                     }
@@ -199,12 +262,12 @@ public class StudentFrontController {
         paperVo.setTimeDifferent(DateTimeUtil.getTimeDifference(paper.getStartTime(), paper.getEndTime()));
         paperVo.setPaperName(paper.getName());
         paperVo.setQuestionResults(questionResults);
-        paperVo.setFullScore(getFullScore(num,score));
+        paperVo.setFullScore(getFullScore(num, score));
         model.addAttribute("result", paperVo);
         return "detail";
     }
 
-    private Integer getFullScore(String[] paperTypeNum, String[] paperTypeScore){
+    private Integer getFullScore(String[] paperTypeNum, String[] paperTypeScore) {
         Integer total = 0;
         for (int i = 0; i < paperTypeNum.length; i++) {
             total += Integer.parseInt(paperTypeNum[i]) * Integer.parseInt(paperTypeScore[i]);
@@ -223,7 +286,7 @@ public class StudentFrontController {
             // 判断试卷是否全是主观题
             Paper paper = paperService.getById(paperId);
             String[] type = paper.getType().split(",");
-            boolean reuslt = "1".equals(type[3]) || "1".equals(type[4]);
+            boolean reuslt = "1".equals(type[3]);
             int score = 0;
             for (Map.Entry<String, String[]> entry : param.entrySet()) {
                 if (entry.getKey().contains("paperId_")) {
@@ -246,19 +309,20 @@ public class StudentFrontController {
                     answer = answerbuff.substring(0, answerbuff.length() - 1);
 
                     record.setStudentAnswer(answer);
-                    if (!reuslt){
+                    if (!reuslt) {
                         // 全是主观题 完成自动阅卷
                         Question question = questionService.getById(questionId);
-                        String[] typeName = new String[]{"单选题", "多选题", "判断", "简答", "应用"};
+                        String[] typeName = Consts.Question.TYPE_NAME;
                         String[] resultScore = paper.getScore().split(",");
                         int index = 0;
-                        if (answer.equals(question.getAnswer())){
+                        // 忽略大小写
+                        if (answer.equalsIgnoreCase(question.getAnswer())) {
                             for (int i = 0; i < typeName.length; i++) {
-                                if (question.getType().equals(typeName[i])){
+                                if (question.getType().equals(typeName[i])) {
                                     index = i;
                                 }
                             }
-                            score +=  Integer.parseInt(resultScore[index]);
+                            score += Integer.parseInt(resultScore[index]);
                         }
                         commitScore.setStudentScore(score);
                     }
@@ -266,7 +330,7 @@ public class StudentFrontController {
                 }
             }
 
-            if (!reuslt){
+            if (!reuslt) {
                 commitScore.setStudentId(studentId);
                 commitScore.setPaperId(paperId);
                 commitScore.setFullScore(fullScore);
@@ -282,7 +346,7 @@ public class StudentFrontController {
 
     @RequestMapping("/student/score/list")
     public String getScore(Model model) {
-        Student student = (Student)UserContext.getUser();
+        Student student = (Student) UserContext.getUser();
         List<Score> scoreList = scoreService.list(new QueryWrapper<Score>().eq("student_id", student.getStudentId()));
         List<ScoreVo> scoreVos = new ArrayList<>();
         for (Score e :
@@ -299,7 +363,7 @@ public class StudentFrontController {
 
     @RequestMapping("/student/profile")
     public String profile(Model model) {
-        Student student = (Student)UserContext.getUser();
+        Student student = (Student) UserContext.getUser();
         if (student == null) {
             return "index";
         }
@@ -323,14 +387,20 @@ public class StudentFrontController {
 
     @RequestMapping("/student/logOut")
     public String logOut(HttpServletRequest request, HttpServletResponse response) {
-        String token = CookieUtil.readLoginToken(request, Consts.Common.STUDENT_TOKEN);
+        String token = CookieUtil.readLoginToken(request, Consts.Common.LOGIN_TOKEN);
         RedisPoolUtil.del(token);
         // 删除cookie
-        CookieUtil.delLoginToken(request, response, Consts.Common.USER_TOKEN);
+        CookieUtil.delLoginToken(request, response, Consts.Common.LOGIN_TOKEN);
         return "redirect:/index";
     }
 
 
+    /*    *//**
+     * 外部题库批量存储
+     * @param args
+     * @throws JSONException
+     * @throws FileNotFoundException
+     *//*
     @RequestMapping("/question/add")
     public void main(String[] args) throws JSONException, FileNotFoundException {
         String jsonStr = "";
@@ -405,6 +475,6 @@ public class StudentFrontController {
         }
         System.out.println(object.toString());
 
-    }
+    }*/
 
 }

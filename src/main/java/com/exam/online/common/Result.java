@@ -59,7 +59,7 @@ public class Result<T> implements Serializable {
     }
 
     public static <T> Result<T> success(){
-        return new Result<T>(ResponseCode.SUCCESS.getCode());
+        return new Result<T>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getDesc());
     }
 
     public static <T> Result<T> success(String msg){

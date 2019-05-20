@@ -79,6 +79,10 @@ public class ClassController {
     @PostMapping("/classAdd")
     @ResponseBody
     public Result classAdd(String className, Integer classId){
+        Boolean existClassName = ParamCheck.existRecord(studentClassService, "class_name", "className", null);
+        if (existClassName){
+            return Result.error("该班级名称已存在");
+        }
         StudentClass studentClass = new StudentClass();
         if (classId != null){
             studentClass.setClassId(classId);

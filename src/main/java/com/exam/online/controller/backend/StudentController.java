@@ -7,17 +7,24 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.exam.online.common.Consts;
 import com.exam.online.bo.PageResult;
 import com.exam.online.common.Result;
+import com.exam.online.entity.Record;
+import com.exam.online.entity.Score;
 import com.exam.online.entity.Student;
 import com.exam.online.entity.StudentClass;
+import com.exam.online.service.RecordService;
+import com.exam.online.service.ScoreService;
 import com.exam.online.service.StudentClassService;
 import com.exam.online.service.StudentService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
 import com.exam.online.util.Md5Util;
+import com.exam.online.util.ParamCheck;
 import com.exam.online.vo.StudentVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +41,7 @@ import java.util.*;
  * @author zhonglunsheng
  * @since 2019-01-16
  */
+@Slf4j
 @Controller
 @RequestMapping("/admin/student")
 public class StudentController {
@@ -43,6 +51,14 @@ public class StudentController {
 
     @Autowired
     private StudentClassService studentClassService;
+
+    @Autowired
+    private ScoreService scoreService;
+
+    @Autowired
+    private RecordService recordService;
+
+
 
     @GetMapping("/")
     public String student(Model model){
@@ -149,6 +165,10 @@ public class StudentController {
     @PostMapping(value = "/studentAdd")
     @ResponseBody
     public Result studentAdd(Student student){
+        Boolean existNum = ParamCheck.existRecord(studentService, "num", "num", null);
+        if (existNum){
+            return Result.error("该学号已存在");
+        }
         if (student != null){
             if (student.getStudentId() == null){
                 student.setPassword(Md5Util.md5Encodeutf8(student.getPassword()));
@@ -168,11 +188,16 @@ public class StudentController {
     @PostMapping(value = "/remove")
     @ResponseBody
     public Result studentRemove(String ids){
-        boolean result = studentService.removeByIds(CommonUtil.strToList(ids));
-        if (result){
-            return Result.success();
-        }else{
-            return Result.error();
+        try{
+            studentService.removeByIds(CommonUtil.strToList(ids));
+            scoreService.remove(new QueryWrapper<Score>().in("student_id", CommonUtil.strToList(ids)));
+            recordService.remove(new QueryWrapper<Record>().in("student_id", CommonUtil.strToList(ids)));
+            return Result.success("删除成功");
+        }catch (Exception e){
+            log.error("删除学生出现异常{}", e);
+            //回滚事务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.error("删除失败");
         }
     }
 

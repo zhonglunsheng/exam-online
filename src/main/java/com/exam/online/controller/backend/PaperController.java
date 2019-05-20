@@ -11,7 +11,6 @@ import com.exam.online.controller.BaseController;
 import com.exam.online.entity.Paper;
 import com.exam.online.entity.PaperQuestion;
 import com.exam.online.entity.Question;
-import com.exam.online.entity.Student;
 import com.exam.online.service.PaperQuestionService;
 import com.exam.online.service.PaperService;
 import com.exam.online.service.QuestionService;
@@ -19,21 +18,18 @@ import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
 import com.exam.online.util.ParamCheck;
 import com.exam.online.util.RedisPoolUtil;
-import com.exam.online.vo.PaperVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.exam.online.common.Consts.Question.TYPENAME;
 
 /**
  * <p>
@@ -136,6 +132,16 @@ public class PaperController extends BaseController {
     @PostMapping(value = "/remove")
     @ResponseBody
     public Result studentRemove(String ids) {
+        List<Paper> paperList = paperService.list(new QueryWrapper<Paper>().in("id", CommonUtil.strToList(ids)));
+        for (Paper paper:
+             paperList) {
+            Boolean inExam = DateTimeUtil.whoIsBig(DateTimeUtil.dateToStr(new Date()), paper.getStartTime())
+                    && DateTimeUtil.whoIsBig(paper.getEndTime(), DateTimeUtil.dateToStr(new Date()));
+            // 该试卷正在考试中不能删除
+            if (inExam){
+                return Result.error(paper.getName()+"试卷正在考试中不能删除");
+            }
+        }
         boolean flag = paperService.removeByIds(CommonUtil.strToList(ids));
         // 删除改试卷下的所有关联的题目
         boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("paper_id", CommonUtil.strToList(ids)));
@@ -235,7 +241,7 @@ public class PaperController extends BaseController {
         for (Integer id :
                 idList) {
             paperQuestion = new PaperQuestion();
-            paperQuestion.setPaperId(Integer.parseInt(RedisPoolUtil.get("paperId")));
+            paperQuestion.setPaperId(Integer.parseInt(RedisPoolUtil.get(Consts.RedisKey.ADMIN_PAPAER_ID)));
             paperQuestion.setQuestionId(id);
             paperQuestions.add(paperQuestion);
         }
@@ -249,7 +255,7 @@ public class PaperController extends BaseController {
     }
 
     /**
-     * 删除试卷信息
+     * 删除试卷题目
      *
      * @param ids
      * @return
@@ -257,7 +263,19 @@ public class PaperController extends BaseController {
     @PostMapping(value = "/question/remove")
     @ResponseBody
     public Result questionRemove(String ids) {
-        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().in("question_id", CommonUtil.strToList(ids)));
+        String paperId = RedisPoolUtil.get(Consts.RedisKey.ADMIN_PAPAER_ID);
+        Paper paper = paperService.getById(paperId);
+        Boolean inExam = DateTimeUtil.whoIsBig(DateTimeUtil.dateToStr(new Date()), paper.getStartTime())
+                && DateTimeUtil.whoIsBig(paper.getEndTime(), DateTimeUtil.dateToStr(new Date()));
+        // 该试卷正在考试中不能删除
+        if (inExam){
+            return Result.error(paper.getName()+"试卷正在考试中不能删除题目");
+        }
+
+        boolean result = paperQuestionService.remove(new QueryWrapper<PaperQuestion>().eq("paperId",paperId).in("question_id", CommonUtil.strToList(ids)));
+        // 不在考试期间删除 需重新发布
+        paper.setStatusCd(Consts.Paper.STATUS_CD_FAILURE);
+        paperService.updateById(paper);
         if (result) {
             return Result.success(Consts.Common.SUCCESS);
         } else {
@@ -287,7 +305,7 @@ public class PaperController extends BaseController {
         for (int i = 0; i < nums.length; i++) {
             total += Integer.parseInt(nums[i]);
         }
-
+        //todo mybatis-plus 多表关联查询
         if (count < total){
             return Result.error("该试卷题库数量不足,不能发布");
         }else{

@@ -1,6 +1,7 @@
 package com.exam.online.config;
 
 import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.exam.online.access.UserContext;
 import com.exam.online.common.Consts;
@@ -32,9 +33,10 @@ public class Interceptor implements HandlerInterceptor {
         }
         String url = request.getRequestURL().toString();
 
+        String loginToken = CookieUtil.readLoginToken(request, Consts.Common.LOGIN_TOKEN);
+        String token = RedisPoolUtil.get(loginToken);
         if (url.contains("/admin") || url.contains("/user")) {
-            String loginToken = CookieUtil.readLoginToken(request, Consts.Common.USER_TOKEN);
-            String token = RedisPoolUtil.get(loginToken);
+
             if (loginToken == null) {
                 response.sendRedirect("/system/login");
                 return false;
@@ -42,11 +44,10 @@ public class Interceptor implements HandlerInterceptor {
             User user = JSONObject.parseObject(token, User.class);
             if (user != null) {
                 UserContext.setUser(user);
+                RedisPoolUtil.setEx(token, JSON.toJSONString(user), 60*30);
                 return true;
             }
         } else {
-            String loginToken = CookieUtil.readLoginToken(request, Consts.Common.STUDENT_TOKEN);
-            String token = RedisPoolUtil.get(loginToken);
             if (loginToken == null) {
                 response.sendRedirect("/index");
                 return false;
@@ -54,6 +55,7 @@ public class Interceptor implements HandlerInterceptor {
             Student student = JSONObject.parseObject(token, Student.class);
             if (student != null) {
                 UserContext.setUser(student);
+                RedisPoolUtil.setEx(token, JSON.toJSONString(student), 60*30);
                 return true;
             }
         }

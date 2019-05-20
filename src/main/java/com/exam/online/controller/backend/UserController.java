@@ -7,7 +7,9 @@ import com.exam.online.access.UserContext;
 import com.exam.online.common.Consts;
 import com.exam.online.common.ResponseCode;
 import com.exam.online.common.Result;
+import com.exam.online.entity.StudentClass;
 import com.exam.online.entity.User;
+import com.exam.online.service.StudentClassService;
 import com.exam.online.service.UserService;
 import com.exam.online.util.CookieUtil;
 import com.exam.online.util.Md5Util;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -73,8 +76,8 @@ public class UserController {
             return result;
         }
         String token = UUID.randomUUID().toString();
-        RedisPoolUtil.set(token, JSON.toJSONString(result.getData()));
-        CookieUtil.writeLoginToken(response, Consts.Common.USER_TOKEN, token);
+        RedisPoolUtil.setEx(token, JSON.toJSONString(result.getData()), 60*30);
+        CookieUtil.writeLoginToken(response, Consts.Common.LOGIN_TOKEN, token);
         return result;
     }
 
@@ -86,10 +89,10 @@ public class UserController {
      */
     @RequestMapping(value = "/system/logOut")
     public String logOut(HttpServletRequest request, HttpServletResponse response) {
-        String token = CookieUtil.readLoginToken(request, Consts.Common.USER_TOKEN);
+        String token = CookieUtil.readLoginToken(request, Consts.Common.LOGIN_TOKEN);
         RedisPoolUtil.del(token);
         // 删除cookie
-        CookieUtil.delLoginToken(request, response, Consts.Common.USER_TOKEN);
+        CookieUtil.delLoginToken(request, response, Consts.Common.LOGIN_TOKEN);
         return "redirect:/system/login";
     }
 

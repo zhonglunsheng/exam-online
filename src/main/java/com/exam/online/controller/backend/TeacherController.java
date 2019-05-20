@@ -13,6 +13,7 @@ import com.exam.online.service.UserService;
 import com.exam.online.util.CommonUtil;
 import com.exam.online.util.DateTimeUtil;
 import com.exam.online.util.Md5Util;
+import com.exam.online.util.ParamCheck;
 import com.exam.online.vo.TeacherVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -141,6 +142,15 @@ public class TeacherController {
     @PostMapping(value = "/teacherAdd")
     @ResponseBody
     public Result teacherAdd(User user){
+        Boolean existEmail = ParamCheck.existRecord(userService, "email", "email",null);
+        if (existEmail){
+            return Result.error("该邮箱已存在");
+        }
+
+        Boolean existPhone = ParamCheck.existRecord(userService, "phone", "email",null);
+        if (existPhone){
+            return Result.error("该手机号码已存在");
+        }
         if (user != null){
             user.setPassword(Md5Util.md5Encodeutf8(user.getPassword()));
             user.setCreateTime(DateTimeUtil.dateToStr(new Date()));

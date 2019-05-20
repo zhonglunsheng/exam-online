@@ -105,7 +105,7 @@
                                                     <small class="ue" style="display: inline;">[[${r.optionD}]]</small>
                                                 </label>
                                             </li>
-                                            <li class="option">
+                                            <li class="option" th:if="${r.optionE} ne ''">
                                                 <label>
                                                     E.
                                                     <small class="ue" style="display: inline;">[[${r.optionE}]]</small>
@@ -128,16 +128,14 @@
                                         <small>学生答案：[[${r.studentAnswer}]]</small>
                                         <br><br><br>
                                         <small>正确答案：[[${r.answer}]]</small>
-                                        <p><h4 style="color:red">请输入分数：<input type="text" width="300px">
-                                    </h4></p>
+                                        <small>得分：<h4 style="color:red; display: inline" class="partA">[[${r.singleScore}]] </h4></small>
                                     </div>
-                                    <!-- 应用模板 -->
+                                    <!-- 填空模板 -->
                                     <div class="test_content_nr_main" th:if="${s.type eq 4}">
                                         <small>学生答案：[[${r.studentAnswer}]]</small>
                                         <br><br><br>
                                         <small>正确答案：[[${r.answer}]]</small>
-                                        <p><h4 style="color:red">请输入分数：<input type="text" width="300px">
-                                    </h4></p>
+                                        <p><h4 style="color:red">请输入分数：<input type="text" width="300px"> </h4></p>
                                     </div>
                                 </li>
                             </ul>
@@ -185,7 +183,7 @@
                 data: {
                     "studentId": $("input[name='studentId']").val(),
                     "paperId": $("input[name='paperId']").val(),
-                    "score": score,
+                    "studentScore": score,
                     "fullScore": [[${result.fullScore}]],
                     "paperName": [[${result.paperName}]]
                 },

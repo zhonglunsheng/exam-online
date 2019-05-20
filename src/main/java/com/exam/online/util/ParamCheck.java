@@ -1,5 +1,8 @@
 package com.exam.online.util;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -70,6 +73,21 @@ public class ParamCheck {
         }else{
             return 0L;
         }
+    }
+
+    /**
+     * 判断是否数据库已存在记录
+     * @param iService
+     * @param key
+     * @param value
+     * @param <T>
+     * @return
+     */
+    public static <T> Boolean existRecord(IService<T> iService, String column, String key, String value){
+        if (value == null){
+            value = ParamCheck.getParamNotNullForString(key);
+        }
+        return iService.count((Wrapper<T>) new QueryWrapper().eq(column, value)) > 0;
     }
 
 }

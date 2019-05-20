@@ -146,7 +146,7 @@ public class QuestionController {
         }
         question.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
         questionService.saveOrUpdate(question);
-        return Result.success();
+        return Result.success("添加成功");
     }
 }
 

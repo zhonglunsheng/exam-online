@@ -20,10 +20,14 @@
                 <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
             </div>
             <span>第三方账号注册</span>
-            <input type="text" placeholder="名称">
-            <input type="email" placeholder="邮箱">
-            <input type="password" placeholder="密码">
-            <button>注册</button>
+            <input type="text" placeholder="名称" id="name">
+            <input type="text" placeholder="学号" id="yourNum">
+            <input type="password" placeholder="密码" id="passwordNew">
+            <select id="classId" >
+                <option value="">请选择班级</option>
+                <option th:each="class : ${classList}" th:value="${class.classId}">[[${class.className}]]</option>
+            </select>
+            <button onclick="doRegister()">注册</button>
         </form>
     </div>
     <div class="form-container sign-in-container">
@@ -76,6 +80,47 @@
                     alert(data.msg);
                 }
             });
+    }
+
+    $("#yourNum").blur(function(){
+        var num = $("#yourNum").val();
+        $.get("/checkNum", { num: num},
+            function(data){
+                if (data.code != 0){
+                    alert(data.msg);
+                }
+            });
+
+        });
+
+
+    function doRegister(){
+        var num = $("#yourNum").val();
+        var password = $("#passwordNew").val();
+        var name = $("#name").val();
+        var classId = $('#classId').val();
+        if (num == "" || password == "" || name == "" || classId == ""){
+            alert('请输入您的信息');
+            return
+        }
+
+        $.post("/register",
+            {
+                num: num,
+                password: password,
+                name: name,
+                classId: classId
+            },
+            function(data,status){
+                if(data.code == 0){
+                    alert(data.msg);
+                    window.location.href="/";
+                }else{
+                    alert(data.msg);
+                }
+            });
+
+
     }
 </script>
 

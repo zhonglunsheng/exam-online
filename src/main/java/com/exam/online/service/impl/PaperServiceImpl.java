@@ -108,7 +108,7 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
                     typeNumsInt[3] = Integer.parseInt(typeNums[3]);
                     total += scoreInt[3] * typeNumsInt[3];
                     break;
-                case "应用题":
+                case "填空题":
                     typeInt[4] = 1;
                     scoreInt[4] = Integer.parseInt(scores[4]);
                     typeNumsInt[4] = Integer.parseInt(typeNums[4]);
@@ -183,7 +183,7 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
                                 totalScore += Integer.parseInt(typeNums[i]) * Integer.parseInt(scores[i]);
                                 break;
                             case 4:
-                                typeName.append("应用 ");
+                                typeName.append("填空 ");
                                 scoreBuff.append(scores[i] + " ");
                                 typeNum.append(typeNums[i] + " ");
                                 totalScore += Integer.parseInt(typeNums[i]) * Integer.parseInt(scores[i]);

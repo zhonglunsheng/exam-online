@@ -12,8 +12,7 @@ public class Consts {
         String ARGUS_NULL = "传入参数为空";
         String SUCCESS = "操作成功";
         String ERROR = "操作失败";
-        String STUDENT_TOKEN = "s_token";
-        String USER_TOKEN = "u_token";
+        String LOGIN_TOKEN = "login_token";
     }
 
     public interface Login {
@@ -21,10 +20,10 @@ public class Consts {
     }
 
     public interface Question {
-        String[] TYPENAME = new String[]{"单选题","多选题","判断题","简答题","应用题"};
+        String[] TYPENAME = new String[]{"单选题","多选题","判断题", "填空题", "简答题"};
         String QUESTION_TITLE_NULL = "请传入题目名称";
         String QUESTION_ANSWER_NULL = "请传入题目参考答案";
-        String[] TYPE_NAME = new String[]{"单选题", "多选题", "判断题", "简答题", "应用题"};
+        String[] TYPE_NAME = new String[]{"单选题", "多选题", "判断题", "填空题", "简答题"};
 
     }
 
@@ -52,5 +51,9 @@ public class Consts {
 
     public interface Submit {
         Integer BLANK_SUBMIT = 2;
+    }
+
+    public interface RedisKey{
+        String ADMIN_PAPAER_ID = "paperId";
     }
 }

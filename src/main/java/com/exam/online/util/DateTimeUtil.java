@@ -58,6 +58,12 @@ public class DateTimeUtil {
         return String.format("%d:%d", hour,minute);
     }
 
+    public static Boolean whoIsBig(String source, String target){
+        Date sourceTime = strToDate(source);
+        Date targetTime = strToDate(target);
+        return sourceTime.getTime() - targetTime.getTime() > 0;
+    }
+
 
 
     public static void main(String[] args) {
