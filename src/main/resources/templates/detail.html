@@ -18,7 +18,7 @@
 	</style>
 </head>
 
-<body>
+<body oncopy="returnfalse">
 <div class="main">
 	<!--nr start-->
 	<div class="test_main">
@@ -205,6 +205,21 @@
 <!--时间js-->
 <script src="/main/time/jquery.countdown.js"></script>
 <script>
+	javascript: window.history.forward(1);
+	document.oncontextmenu=new Function("return false");
+	$(document).ready(function(){
+		checkTime();
+	});
+	function checkTime(){
+		setTimeout(checkTime, 1000 * 1);
+		var endTime = $(".alt-1").text();
+		if (endTime == '00:00:0000:00:00'){
+			// js 获取form表单
+			var form_submit = document.getElementById('form-submit');
+			// 让form表单提交
+			form_submit.submit();
+		}
+	}
     window.jQuery(function($) {
         "use strict";
 
@@ -220,23 +235,97 @@
 
     });
 
-	var UnloadConfirm = {};
-	UnloadConfirm.MSG_UNLOAD = "禁止刷新页面或离开考场，否则系统会自动交卷\n\n您确定吗？";
-	UnloadConfirm.set = function(a) {
-		window.onbeforeunload = function(b) {
-			b = b || window.event;
-			b.returnValue = a;
-			return a
+	// var UnloadConfirm = {};
+	// UnloadConfirm.MSG_UNLOAD = "禁止刷新页面或离开考场，否则系统会自动交卷\n\n您确定吗？";
+	// UnloadConfirm.set = function(a) {
+	// 	window.onbeforeunload = function(b) {
+	// 		b = b || window.event;
+	// 		b.returnValue = a;
+	// 		return a
+	// 	}
+	// };
+	// UnloadConfirm.clear = function() {
+	// 	fckDraft.delDraftById();
+	// 	window.onbeforeunload = function() {
+	// 	}
+	// };
+	// UnloadConfirm.set(UnloadConfirm.MSG_UNLOAD);
+	document.onkeydown = function(e) {
+		e = window.event || e;
+		var k = e.keyCode;
+		//屏蔽ctrl+R，F5键，ctrl+F5键  F3键！验证
+		if ((e.ctrlKey == true && k == 82) || (k == 116)
+				|| (e.ctrlKey == true && k == 116)||k==114) {
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+
+		}
+		if (k == 8) {
+			alert("不能返回或后退！");
+			e.keyCode = 0;
+			e.returnValue = false;
+			return false;
+		}
+		//屏蔽 Ctrl+n   验证可以实现效果
+		if (e.ctrlKey && k == 78){
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+		}
+		//屏蔽F11   验证可以实现效果
+		if (k == 122) {
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+		}
+		//屏蔽 shift+F10  验证可以实现效果
+		if ((e.shiftKey && k == 121)||(e.ctrlKey && k == 121)){
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+		}
+
+		//屏蔽Alt+F4
+		if ((e.altKey) && (k== 115)) {
+			window.showModelessDialog("about:blank", "",
+					"dialogWidth:1px;dialogheight:1px");
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+		}
+		//屏蔽 Alt+ 方向键 ← ;屏蔽 Alt+ 方向键 → ！验证
+		if ((e.altKey)
+				&& ((k == 37) || (k == 39))) {
+			alert("不准你使用ALT+方向键前进或后退网页！");
+			e.keyCode = 0;
+			e.returnValue = false;
+			e.cancelBubble = true;
+			return false;
+		}
+
+	};
+
+	//屏蔽右键菜单，！验证
+	document.oncontextmenu = function(event) {
+		if (window.event) {
+			event = window.event;
+		}
+		try {
+			var the = event.srcElement;
+			if (!((the.tagName == "INPUT" && the.type.toLowerCase() == "text") || the.tagName == "TEXTAREA")) {
+				return false;
+			}
+			return true;
+		} catch (e) {
+			return false;
 		}
 	};
-	UnloadConfirm.clear = function() {
-		fckDraft.delDraftById();
-		window.onbeforeunload = function() {
-		}
-	};
-	UnloadConfirm.set(UnloadConfirm.MSG_UNLOAD);
-
-
 	$(function() {
         $('li.option label').click(function() {
             debugger;
@@ -271,6 +360,26 @@
             form_submit.submit();
         }
     }
+</script>
+<script language="JavaScript">
+	top.window.moveTo(0,0);
+	//判断是否为IE浏览器
+	if (document.all)
+	{
+		top.window.resizeTo(screen.availWidth,screen.availHeight);
+	}
+//判断是否为Netscape浏览器(document.layers是Netscape 4.x专有的属性，由于
+//document.layers在Netscape6.0以后已经取消，此方法只适用于6.0之前的浏览器)
+
+	else if (document.layers||document.getElementById)
+	{
+		if(top.window.outerHeight<screen.availHeight||
+				top.window.outerWidth<screen.availWidth)
+		{
+			top.window.outerHeight = screen.availHeight;
+			top.window.outerWidth = screen.availWidth;
+		}
+	}
 </script>
 <div style="text-align:center;">
 </div>

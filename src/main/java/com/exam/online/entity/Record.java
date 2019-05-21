@@ -53,12 +53,12 @@ public class Record extends Model<Record> {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private String createTime;
 
     /**
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    private String updateTime;
 
 
     @Override

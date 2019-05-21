@@ -14,6 +14,7 @@ import com.exam.online.vo.exam.QuestionVo;
 import com.exam.online.vo.exam.StudentPaperVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,6 +59,9 @@ public class StudentFrontController {
 
     @Autowired
     private StudentClassService studentClassService;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     /**
      * 学生登录首页
@@ -278,12 +282,15 @@ public class StudentFrontController {
     @RequestMapping("/student/paper/submit")
     public String paperSubmit(HttpServletRequest request, Integer studentId, Integer paperId, String paperName, Integer fullScore) {
         Map<String, String[]> param = request.getParameterMap();
+        Map<String, Object> messageInMap = new HashMap<>();
+        List<Record> records = new ArrayList<>();
+        List<Score> scores = new ArrayList<>();
         Score commitScore = new Score();
         if (param.size() == Consts.Submit.BLANK_SUBMIT) {
             // 交白卷
             commitScore.setStudentScore(0);
         } else {
-            // 判断试卷是否全是主观题
+            // 判断试卷是否全是客观题
             Paper paper = paperService.getById(paperId);
             String[] type = paper.getType().split(",");
             boolean reuslt = "1".equals(type[3]);
@@ -297,8 +304,8 @@ public class StudentFrontController {
                     record.setQuestionId(questionId);
                     record.setStudentId(studentId);
                     record.setPaperId(paperId);
-                    record.setCreateTime(LocalDateTime.now());
-                    record.setUpdateTime(LocalDateTime.now());
+                    record.setCreateTime(DateTimeUtil.dateToStr(new Date()));
+                    record.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
                     StringBuffer answerbuff = new StringBuffer();
                     String answer = "";
                     for (String v :
@@ -310,7 +317,7 @@ public class StudentFrontController {
 
                     record.setStudentAnswer(answer);
                     if (!reuslt) {
-                        // 全是主观题 完成自动阅卷
+                        // 全是客观题 完成自动阅卷
                         Question question = questionService.getById(questionId);
                         String[] typeName = Consts.Question.TYPE_NAME;
                         String[] resultScore = paper.getScore().split(",");
@@ -326,10 +333,9 @@ public class StudentFrontController {
                         }
                         commitScore.setStudentScore(score);
                     }
-                    recordService.save(record);
+                    records.add(record);
                 }
             }
-
             if (!reuslt) {
                 commitScore.setStudentId(studentId);
                 commitScore.setPaperId(paperId);
@@ -337,11 +343,15 @@ public class StudentFrontController {
                 commitScore.setPaperName(paperName);
                 commitScore.setCreateTime(DateTimeUtil.dateToStr(new Date()));
                 commitScore.setUpdateTime(DateTimeUtil.dateToStr(new Date()));
-                scoreService.save(commitScore);
+                scores.add(commitScore);
+                messageInMap.put("commitScore", scores);
             }
         }
-
-        return "redirect:/student/main";
+        messageInMap.put("record", records);
+        // 把消息对象转换为json 字符串
+        String message = JsonUtil.obj2String(messageInMap);
+        amqpTemplate.convertAndSend("myQueue", message);
+        return "redirect:/";
     }
 
     @RequestMapping("/student/score/list")
